@@ -1,0 +1,1367 @@
+﻿<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ETD Lepeh Medical Calculator - Mobile</title>
+  <meta name="theme-color" content="#2563eb">
+  <meta name="description" content="ETD Lepeh mobile medical calculator for infusion rate, inotrope dosing, target dose, and insulin scale.">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="ETD Calculator">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="etd-lepeh-manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="etd-lepeh-icon-192.png">
+  <link rel="apple-touch-icon" href="etd-lepeh-icon-192.png">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --accent: #10b981;
+      --accent-dark: #059669;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --card: rgba(255, 255, 255, 0.98);
+      --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+      --text: #1f2937;
+      --text-light: #6b7280;
+      --border: #e5e7eb;
+      --input-focus: #3b82f6;
+      --success-bg: #ecfdf5;
+      --success-border: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      padding: 10px;
+      line-height: 1.5;
+      font-size: 16px;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 0 5px;
+      padding-bottom: 80px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 20px 15px;
+      box-shadow: var(--card-shadow);
+      position: sticky;
+      top: 10px;
+      z-index: 100;
+    }
+
+    .header h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    .header .subtitle {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .header .author {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      font-style: italic;
+    }
+
+    /* Tab Navigation */
+    .tab-container {
+      margin-bottom: 20px;
+      background: var(--card);
+      border-radius: 15px;
+      padding: 10px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .tab-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .tab-buttons-secondary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .tab-btn {
+      padding: 12px 8px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      line-height: 1.2;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      color: white;
+      transform: scale(1.02);
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .tab-btn:not(.active) {
+      background: #f8fafc;
+      color: var(--text-light);
+      border: 1px solid var(--border);
+    }
+
+    .tab-btn:not(.active):hover {
+      background: #f1f5f9;
+    }
+
+    /* Calculator Cards */
+    .calculator-card {
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: var(--card-shadow);
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .calculator-card.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .calculator-card h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 20px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .form-row-inline {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .form-row-triple {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background: white;
+      -webkit-appearance: none;
+      min-height: 44px;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--input-focus);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    button {
+      width: 100%;
+      padding: 16px 20px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      touch-action: manipulation;
+      min-height: 44px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      color: white;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #6b7280, #4b5563);
+      color: white;
+      box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3);
+    }
+
+    .btn-secondary:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 8px rgba(107, 114, 128, 0.4);
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 20px;
+      background: var(--success-bg);
+      border: 2px solid var(--success-border);
+      border-radius: 12px;
+      font-weight: 600;
+      color: #065f46;
+      font-size: 1rem;
+      line-height: 1.6;
+      animation: slideIn 0.4s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .info-text {
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      font-size: 0.85rem;
+    }
+
+    th, td {
+      padding: 10px 8px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 0.75rem;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
+
+    .error {
+      background: #fef2f2;
+      border-color: var(--danger);
+      color: #b91c1c;
+    }
+
+    .custom-volume-input {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .show {
+      display: block !important;
+    }
+
+    /* Quick Access Footer */
+    .quick-access {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      padding: 8px 5px;
+      display: flex;
+      justify-content: space-around;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+    }
+
+    .quick-btn {
+      flex: 1;
+      margin: 0 3px;
+      padding: 8px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--text-light);
+      text-transform: none;
+      letter-spacing: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      line-height: 1;
+      min-height: 44px;
+      justify-content: center;
+    }
+
+    .quick-btn .icon {
+      font-size: 1rem;
+    }
+
+    .quick-btn.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --card: rgba(30, 41, 59, 0.95);
+        --text: #f1f5f9;
+        --text-light: #94a3b8;
+        --border: #475569;
+      }
+      
+      input, select {
+        background: #334155;
+        color: white;
+        border-color: #475569;
+      }
+      
+      table {
+        background: #334155;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>ETD Lepeh Medical Calculator</h1>
+      <div class="subtitle">Mobile Medical Calculator</div>
+      <div class="author">By Pakdo Li 🤭</div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tab-container">
+      <div class="tab-buttons">
+        <button class="tab-btn active" data-tab="infusion">🩸 Infusion Rate</button>
+        <button class="tab-btn" data-tab="time">⏱️ Time Calculator</button>
+      </div>
+      <div class="tab-buttons-secondary">
+        <button class="tab-btn" data-tab="norad">💊 Noradrenaline</button>
+        <button class="tab-btn" data-tab="adrenaline">💓 Adrenaline</button>
+        <button class="tab-btn" data-tab="dobutamine">❤️ Dobutamine</button>
+        <button class="tab-btn" data-tab="target">🎯 Target Dose</button>
+        <button class="tab-btn" data-tab="insulin">💉 Insulin Scale</button>
+      </div>
+    </div>
+
+    <!-- 1. INFUSION RATE CALCULATOR -->
+    <div class="calculator-card active" id="infusion-card">
+      <h2>🩸 Infusion Rate Calculator</h2>
+      
+      <div class="form-row-triple">
+        <div class="form-group">
+          <label for="inf_volume">Volume (ml)</label>
+          <input type="number" id="inf_volume" step="0.01" placeholder="Contoh: 500">
+        </div>
+        <div class="form-group">
+          <label for="inf_hours">Masa (Jam)</label>
+          <input type="number" id="inf_hours" step="0.01" placeholder="Contoh: 4">
+        </div>
+        <div class="form-group">
+          <label for="inf_minutes">Masa (Minit)</label>
+          <input type="number" id="inf_minutes" step="1" placeholder="Contoh: 30">
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button class="btn-primary" id="btnInfusionCalc">Kira Kadar</button>
+        <button class="btn-secondary" id="btnInfusionReset">Reset</button>
+      </div>
+
+      <div class="result" id="infusion_out" style="display:none;"></div>
+
+      <div class="info-text" style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border-left: 4px solid #10b981;">
+        📚 <strong>Formula Mudah:</strong> ml/jam = Volume ÷ Masa(jam) • ml/min = (ml/jam) ÷ 60
+      </div>
+    </div>
+
+    <!-- 2. TIME ESTIMATION CALCULATOR -->
+    <div class="calculator-card" id="time-card">
+      <h2>⏱️ Estimation Time Calculator</h2>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="time_volume">Volume (ml)</label>
+          <input type="number" id="time_volume" step="0.01" placeholder="Contoh: 100">
+        </div>
+        <div class="form-group">
+          <label for="time_rate">Kadar (ml/jam)</label>
+          <input type="number" id="time_rate" step="0.01" placeholder="Contoh: 25">
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button class="btn-primary" id="btnTimeCalc">Kira Masa</button>
+        <button class="btn-secondary" id="btnTimeReset">Reset</button>
+      </div>
+
+      <div class="result" id="time_out" style="display:none;"></div>
+      
+      <div class="info-text" style="background: linear-gradient(135deg, #fef3c7, #fde68a); border-left: 4px solid #f59e0b;">
+        💡 <strong>Nota Berguna:</strong> Untuk anggaran bila satu-satu syringe pump/infusion habis untuk standby - 
+        contoh perjalanan refer jauh... begitulah deh! 🚑✨
+      </div>
+
+      <div class="info-text" style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border-left: 4px solid #10b981; margin-top: 15px;">
+        📚 <strong>Formula:</strong> Masa (jam) = Volume (ml) ÷ Kadar (ml/jam)
+      </div>
+    </div>
+
+    <!-- 3. NORADRENALINE CALCULATOR -->
+    <div class="calculator-card" id="norad-card">
+      <h2>💊 Noradrenaline Dose Calculator</h2>
+      
+      <div class="form-row-triple">
+        <div class="form-group">
+          <label for="norad_weight">Berat (kg)</label>
+          <input type="number" id="norad_weight" step="0.01" placeholder="Contoh: 70">
+        </div>
+        <div class="form-group">
+          <label for="norad_dose">Dose (mcg/kg/min)</label>
+          <input type="number" id="norad_dose" step="0.01" placeholder="Contoh: 0.10">
+        </div>
+        <div class="form-group">
+          <label for="norad_strength">Strength (kepekatan)</label>
+          <select id="norad_strength">
+            <option value="160">Double Strength (160 mcg/ml)</option>
+            <option value="80">Single Strength (80 mcg/ml)</option>
+            <option value="320">4x  Strength (320 mcg/ml)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button class="btn-primary" id="btnNoradCalc">Kira Noradrenaline Rate</button>
+        <button class="btn-secondary" id="btnNoradReset">Reset</button>
+      </div>
+
+      <div class="result" id="norad_out" style="display:none;"></div>
+
+      <div class="info-text" style="background: linear-gradient(135deg, #fef2f2, #fecaca); border-left: 4px solid #ef4444;">
+        ⚗️ <strong>Formula Noradrenaline:</strong> ml/jam = (dose × berat × 60) ÷ kepekatan<br>
+        🧪 <strong>Preparation Notes:</strong> Single strength ≈4mg dalam 50ml → ±80mcg/ml. Double strength ≈ 8mg dalam 50ml → ±160mcg/ml. 4 x strength ≈16mg dalam 50ml → ±320mcg/ml.<br>
+        ⚠️ <strong>Important:</strong> Pastikan volume akhir 50ml untuk konsistensi kepekatan yang betul!
+      </div>
+    </div>
+
+<div class="calculator-card" id="adrenaline-card">
+  <h2>💓 Adrenaline IVI Calculator</h2>
+  
+  <div class="form-row-triple">
+    <div class="form-group">
+      <label for="adr_weight">Berat (kg)</label>
+      <input type="number" id="adr_weight" step="0.01" placeholder="Contoh: 70">
+    </div>
+    <div class="form-group">
+      <label for="adr_dose">Dose (mcg/kg/min)</label>
+      <input type="number" id="adr_dose" step="0.01" placeholder="Contoh: 0.05">
+    </div>
+    <div class="form-group">
+      <label for="adr_strength">Strength (kepekatan)</label>
+      <select id="adr_strength">
+        <option value="60">Single Strength (60 mcg/ml)</option>
+        <option value="120">Double Strength (120 mcg/ml)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="button-group">
+    <button class="btn-primary" id="btnAdrCalc">Kira Adrenaline Rate</button>
+    <button class="btn-secondary" id="btnAdrReset">Reset</button>
+  </div>
+
+  <div class="result" id="adr_out" style="display:none;"></div>
+
+  <div class="info-text" style="background: linear-gradient(135deg, #fef2f2, #fecaca); border-left: 4px solid #ef4444;">
+    ⚗️ <strong>Formula Adrenaline:</strong> ml/jam = (dose × berat × 60) ÷ kepekatan<br>
+    🧪 <strong>Preparation Notes (dilute in normal saline):</strong><br>
+    • Single strength: 3mg dalam 50ml → 60 mcg/ml<br>
+    • Double strength: 6mg dalam 50ml → 120 mcg/ml<br>
+    ⚠️ <strong>Important:</strong> Pastikan volume akhir 50ml untuk konsistensi kepekatan yang betul!
+  </div>
+
+  <div class="info-text" style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border-left: 4px solid #3b82f6; margin-top: 15px;">
+    💡 <strong>Dosing Range:</strong> Typical dose 0.01-0.5 mcg/kg/min<br>
+    📋 <strong>Conversion:</strong> 1mg = 1000mcg • 1ml Adrenaline 1:1000 = 1mg
+  </div>
+</div>
+
+<div class="calculator-card" id="dobutamine-card">
+  <h2>❤️ Dobutamine IVI Calculator</h2>
+  
+  <div class="form-row-triple">
+    <div class="form-group">
+      <label for="dob_weight">Berat (kg)</label>
+      <input type="number" id="dob_weight" step="0.01" placeholder="Contoh: 70">
+    </div>
+    <div class="form-group">
+      <label for="dob_dose">Dose (mcg/kg/min)</label>
+      <input type="number" id="dob_dose" step="0.01" placeholder="Contoh: 5.0">
+    </div>
+    <div class="form-group">
+      <label for="dob_strength">Strength (kepekatan)</label>
+      <select id="dob_strength">
+        <option value="5000">Single Strength (5 mg/ml)</option>
+        <option value="10000">Double Strength (10 mg/ml)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="button-group">
+    <button class="btn-primary" id="btnDobCalc">Kira Dobutamine Rate</button>
+    <button class="btn-secondary" id="btnDobReset">Reset</button>
+  </div>
+
+  <div class="result" id="dob_out" style="display:none;"></div>
+
+  <div class="info-text" style="background: linear-gradient(135deg, #fef2f2, #fecaca); border-left: 4px solid #ef4444;">
+    ⚗️ <strong>Formula Dobutamine:</strong> ml/jam = (dose × berat × 60) ÷ kepekatan<br>
+    🧪 <strong>Preparation Notes:</strong><br>
+    • Single strength: 250mg dalam 50ml D5/NS → 5 mg/ml (5000 mcg/ml)<br>
+    • Double strength: 500mg dalam 50ml D5/NS → 10 mg/ml (10000 mcg/ml)<br>
+    • 1 ampule = 250mg/20ml<br>
+    ⚠️ <strong>Important:</strong> Pastikan volume akhir 50ml untuk konsistensi kepekatan yang betul!
+  </div>
+
+  <div class="info-text" style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border-left: 4px solid #3b82f6; margin-top: 15px;">
+    💡 <strong>Dosing Range:</strong> Typical dose 2.5-20 mcg/kg/min<br>
+    📋 <strong>Clinical Use:</strong> Inotropic support • Cardiac output augmentation<br>
+    🔄 <strong>Conversion:</strong> 1 mg = 1000 mcg
+  </div>
+</div>
+
+    <!-- 4. TARGET DOSE CALCULATOR -->
+    <div class="calculator-card" id="target-card">
+      <h2>🎯 Target Dose Calculator</h2>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label>Total Content in Ampoule/Vial</label>
+          <input type="number" id="totalContent" placeholder="Masukkan nilai">
+          <select id="totalUnit" style="margin-top: 10px;">
+            <option value="mg">mg</option>
+            <option value="g">g</option>
+            <option value="u">U</option>
+            <option value="miu">MIU</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Dilution Volume (ml)</label>
+          <select id="dilutionVolume">
+            <option value="10">10 ml</option>
+            <option value="20">20 ml</option>
+            <option value="50">50 ml</option>
+            <option value="custom">Custom</option>
+          </select>
+          <input type="number" id="customVolume" class="custom-volume-input" placeholder="Masukkan custom volume">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Target Dose</label>
+          <input type="number" id="targetDose" placeholder="Masukkan nilai">
+          <select id="targetUnit" style="margin-top: 10px;">
+            <option value="mg">mg</option>
+            <option value="g">g</option>
+            <option value="u">U</option>
+            <option value="miu">MIU</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button class="btn-primary" id="btnTargetCalc">Calculate</button>
+        <button class="btn-secondary" id="btnTargetReset">Reset</button>
+      </div>
+
+      <div class="result" id="target_out" style="display:none;"></div>
+
+      <div class="info-text" style="background: linear-gradient(135deg, #ddd6fe, #c4b5fd); border-left: 4px solid #8b5cf6;">
+        😅 <strong>Untuk yang malas kira manual:</strong> Atau pening dengan doses paed medication - boleh try kira sini! 
+      </div>
+    </div>
+
+    <!-- 5. SLIDING SCALE INSULIN CALCULATOR -->
+    <div class="calculator-card" id="insulin-card">
+      <h2>💉 Sliding Scale Insulin Calculator</h2>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="glucose">Bacaan Glukosa (mmol/L)</label>
+          <input type="number" id="glucose" step="0.1" placeholder="Contoh: 7.8">
+        </div>
+        <div class="form-group">
+          <label for="regimen">Pilihan Regim</label>
+          <select id="regimen">
+            <option value="A">Regim A (Skala Paling Rendah)</option>
+            <option value="B">Regim B (Skala Sederhana)</option>
+            <option value="C">Regim C (Skala Tinggi)</option>
+            <option value="D">Regim D (Skala Paling Tinggi)</option>
+            <option value="ALL">Bandingkan Semua Regim</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button class="btn-primary" id="btnInsulinCalc">Kira Insulin</button>
+        <button class="btn-secondary" id="btnInsulinReset">Reset</button>
+      </div>
+
+      <div class="result" id="insulin_out" style="display:none;"></div>
+      <div id="insulin_note" class="info-text" style="display:none;"></div>
+
+      <table style="margin-top: 20px;">
+        <thead>
+          <tr>
+            <th>Gula (mmol/L)</th>
+            <th>A</th>
+            <th>B</th>
+            <th>C</th>
+            <th>D</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>0-3.9</td><td>0u</td><td>0u</td><td>0u</td><td>0u</td></tr>
+          <tr><td>4.0-6.9</td><td>1u</td><td>2u</td><td>3u</td><td>4u</td></tr>
+          <tr><td>7.0-8.9</td><td>2u</td><td>4u</td><td>6u</td><td>8u</td></tr>
+          <tr><td>9.0-10.9</td><td>3u</td><td>6u</td><td>9u</td><td>12u</td></tr>
+          <tr><td>11.0-12.9</td><td>4u</td><td>8u</td><td>12u</td><td>16u</td></tr>
+          <tr><td>>13</td><td>6u</td><td>12u</td><td>18u</td><td>24u</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-text" style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border-left: 4px solid #3b82f6;">
+        ⚠️ <strong>Nota Penting:</strong> Untuk Regim A — jika bacaan >13 mmol/L berterusan 3 jam berturut-turut, 
+        pertimbangkan tukar ke Regim B (ikut protokol klinikal setempat).<br>
+        👨‍⚕️ <strong>Safety First:</strong> Apo apo tanyo dulu deh sebelum apply ke patient! 
+      </div>
+    </div>
+
+    <!-- Quick Access Footer -->
+    <div class="quick-access">
+      <button class="quick-btn active" data-tab="infusion">
+        <span class="icon">🩸</span>
+        <span>Rate</span>
+      </button>
+      <button class="quick-btn" data-tab="time">
+        <span class="icon">⏱️</span>
+        <span>Time</span>
+      </button>
+      <button class="quick-btn" data-tab="norad">
+        <span class="icon">💊</span>
+        <span>Norad</span>
+     </button>
+              <button class="quick-btn" data-tab="adrenaline">
+                  <span class="icon">💓</span>
+                 <span>Adr</span>
+           </button>
+        <button class="quick-btn" data-tab="dobutamine">
+           <span class="icon">❤️</span>
+          <span>Dob</span>
+       </button>
+      <button class="quick-btn" data-tab="target">
+        <span class="icon">🎯</span>
+        <span>Target</span>
+      </button>
+      <button class="quick-btn" data-tab="insulin">
+        <span class="icon">💉</span>
+        <span>Insulin</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Utility functions
+    function num(v) { return parseFloat(v) || 0; }
+    function fmt(n, dp = 2) { return isFinite(n) ? n.toFixed(dp) : '—'; }
+    function show(el, on = true) { 
+      if (el) el.style.display = on ? 'block' : 'none'; 
+    }
+
+    // Tab switching functionality
+    function initTabs() {
+      const tabButtons = document.querySelectorAll('.tab-btn');
+      const quickButtons = document.querySelectorAll('.quick-btn');
+      const calculatorCards = document.querySelectorAll('.calculator-card');
+
+      function switchTab(tabId) {
+        // Hide all cards
+        calculatorCards.forEach(card => {
+          card.classList.remove('active');
+        });
+
+        // Remove active class from all buttons
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        quickButtons.forEach(btn => btn.classList.remove('active'));
+
+        // Show selected card
+        const selectedCard = document.getElementById(tabId + '-card');
+        if (selectedCard) {
+          selectedCard.classList.add('active');
+        }
+
+        // Activate corresponding buttons
+        const tabBtn = document.querySelector(`[data-tab="${tabId}"]`);
+        const quickBtn = document.querySelector(`.quick-btn[data-tab="${tabId}"]`);
+        if (tabBtn) tabBtn.classList.add('active');
+        if (quickBtn) quickBtn.classList.add('active');
+
+        // Hide all results when switching tabs
+        document.querySelectorAll('.result').forEach(result => {
+          show(result, false);
+        });
+      }
+
+      // Add event listeners
+      [...tabButtons, ...quickButtons].forEach(button => {
+        button.addEventListener('click', (e) => {
+          e.preventDefault();
+          const tabId = button.dataset.tab;
+          if (tabId) {
+            switchTab(tabId);
+          }
+        });
+      });
+    }
+
+    // Initialize tabs on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      initTabs();
+      
+      // Add button press effects for mobile
+      const buttons = document.querySelectorAll('button');
+      buttons.forEach(button => {
+        button.addEventListener('touchstart', function(e) {
+          this.style.transform = 'scale(0.95)';
+        });
+        
+        button.addEventListener('touchend', function(e) {
+          setTimeout(() => {
+            this.style.transform = '';
+          }, 100);
+        });
+      });
+
+      // Prevent form submission on enter
+      document.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+        }
+      });
+    });
+
+    // 1. INFUSION RATE CALCULATOR
+    (function() {
+      const elements = {
+        volume: document.getElementById('inf_volume'),
+        hours: document.getElementById('inf_hours'),
+        minutes: document.getElementById('inf_minutes'),
+        output: document.getElementById('infusion_out'),
+        calcBtn: document.getElementById('btnInfusionCalc'),
+        resetBtn: document.getElementById('btnInfusionReset')
+      };
+
+      if (elements.calcBtn) {
+        elements.calcBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const vol = num(elements.volume.value);
+          const hrs = num(elements.hours.value);
+          const mins = num(elements.minutes.value);
+
+          if (!vol || vol <= 0) {
+            elements.output.innerHTML = "⚠️ Sila masukkan volume yang betul.";
+            elements.output.className = "result error";
+            show(elements.output, true);
+            return;
+          }
+
+          const totalHours = hrs + (mins / 60);
+          if (totalHours <= 0) {
+            elements.output.innerHTML = "⚠️ Masa mesti lebih daripada 0.";
+            elements.output.className = "result error";
+            show(elements.output, true);
+            return;
+          }
+
+          const mlph = vol / totalHours;
+          const mlpm = mlph / 60;
+
+          elements.output.innerHTML = `
+            <div style="font-size: 1.1em; margin-bottom: 10px;">
+              📊 <strong>Kadar: ${fmt(mlph)} ml/jam</strong>
+            </div>
+            <div style="color: #059669;">
+              ⏱️ ${fmt(mlpm, 3)} ml/min<br>
+              📋 Volume: ${fmt(vol, 2)} ml • Masa: ${fmt(totalHours, 3)} jam
+            </div>
+          `;
+          elements.output.className = "result";
+          show(elements.output, true);
+        });
+      }
+
+      if (elements.resetBtn) {
+        elements.resetBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          elements.volume.value = "";
+          elements.hours.value = "";
+          elements.minutes.value = "";
+          show(elements.output, false);
+        });
+      }
+    })();
+
+    // 2. TIME ESTIMATION CALCULATOR
+    (function() {
+      const elements = {
+        volume: document.getElementById('time_volume'),
+        rate: document.getElementById('time_rate'),
+        output: document.getElementById('time_out'),
+        calcBtn: document.getElementById('btnTimeCalc'),
+        resetBtn: document.getElementById('btnTimeReset')
+      };
+
+      if (elements.calcBtn) {
+        elements.calcBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const vol = num(elements.volume.value);
+          const rate = num(elements.rate.value);
+
+          if (!vol || vol <= 0 || !rate || rate <= 0) {
+            elements.output.innerHTML = "⚠️ Sila masukkan nilai yang betul.";
+            elements.output.className = "result error";
+            show(elements.output, true);
+            return;
+          }
+
+          const hours = vol / rate;
+          const hPart = Math.floor(hours);
+          const mPart = Math.round((hours - hPart) * 60);
+
+          elements.output.innerHTML = `
+            <div style="font-size: 1.1em; margin-bottom: 10px;">
+              ⏰ <strong>Masa: ${fmt(hours, 2)} jam</strong>
+            </div>
+            <div style="color: #059669;">
+              📅 Approximately ${hPart} jam ${mPart} minit<br>
+              📋 Volume: ${fmt(vol, 2)} ml • Rate: ${fmt(rate, 2)} ml/jam
+            </div>
+          `;
+          elements.output.className = "result";
+          show(elements.output, true);
+        });
+      }
+
+      if (elements.resetBtn) {
+        elements.resetBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          elements.volume.value = "";
+          elements.rate.value = "";
+          show(elements.output, false);
+        });
+      }
+    })();
+
+    // 3. NORADRENALINE CALCULATOR
+    (function() {
+      const elements = {
+        weight: document.getElementById('norad_weight'),
+        dose: document.getElementById('norad_dose'),
+        strength: document.getElementById('norad_strength'),
+        output: document.getElementById('norad_out'),
+        calcBtn: document.getElementById('btnNoradCalc'),
+        resetBtn: document.getElementById('btnNoradReset')
+      };
+
+      if (elements.calcBtn) {
+        elements.calcBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const weight = num(elements.weight.value);
+          const dose = num(elements.dose.value);
+          const strength = num(elements.strength.value);
+
+          if (!weight || weight <= 0 || !dose || dose <= 0) {
+            elements.output.innerHTML = "⚠️ Sila masukkan nilai yang betul.";
+            elements.output.className = "result error";
+            show(elements.output, true);
+            return;
+          }
+
+          const mlph = (dose * weight * 60) / strength;
+
+          elements.output.innerHTML = `
+            <div style="font-size: 1.1em; margin-bottom: 10px;">
+              💊 <strong>Noradrenaline Rate: ${fmt(mlph)} ml/jam</strong>
+            </div>
+            <div style="color: #059669;">
+              📊 Dose: ${dose} mcg/kg/min<br>
+              ⚖️ Berat: ${weight} kg<br>
+              🧪 Kepekatan: ${strength} mcg/ml
+            </div>
+          `;
+          elements.output.className = "result";
+          show(elements.output, true);
+        });
+      }
+
+      if (elements.resetBtn) {
+        elements.resetBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          elements.weight.value = "";
+          elements.dose.value = "";
+          elements.strength.value = "160";
+          show(elements.output, false);
+        });
+      }
+    })();
+
+// 6. ADRENALINE IVI CALCULATOR
+(function() {
+  const elements = {
+    weight: document.getElementById('adr_weight'),
+    dose: document.getElementById('adr_dose'),
+    strength: document.getElementById('adr_strength'),
+    output: document.getElementById('adr_out'),
+    calcBtn: document.getElementById('btnAdrCalc'),
+    resetBtn: document.getElementById('btnAdrReset')
+  };
+
+  if (elements.calcBtn) {
+    elements.calcBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+
+      const weight = num(elements.weight.value);
+      const dose = num(elements.dose.value);
+      const strength = num(elements.strength.value);
+
+      if (!weight || weight <= 0 || !dose || dose <= 0 || !strength || strength <= 0) {
+        elements.output.innerHTML = "⚠️ Sila masukkan nilai yang betul.";
+        elements.output.className = "result error";
+        show(elements.output, true);
+        return;
+      }
+
+      // Formula: ml/hr = (dose × weight × 60) / concentration
+      const mlph = (dose * weight * 60) / strength;
+
+      // Determine strength type for display
+      const strengthType = strength === 60 ? "Single Strength" :
+                           strength === 120 ? "Double Strength" : "Custom";
+
+      // Kemas & tersusun — tiada baris kosong pelik
+      elements.output.innerHTML = `
+        <div class="result-line">💓 <b>Adrenaline Rate:</b> ${fmt(mlph, 2)} ml/jam</div>
+        <div class="result-line">📊 <b>Dose:</b> ${dose} mcg/kg/min</div>
+        <div class="result-line">⚖️ <b>Berat:</b> ${weight} kg</div>
+        <div class="result-line">🧪 <b>Kepekatan:</b> ${strength} mcg/ml (${strengthType})</div>
+      `;
+
+      elements.output.className = "result";
+      show(elements.output, true);
+    });
+  }
+
+  if (elements.resetBtn) {
+    elements.resetBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      elements.weight.value = "";
+      elements.dose.value = "";
+      elements.strength.value = "60";
+      show(elements.output, false);
+    });
+  }
+})();
+
+  // 7. DOBUTAMINE IVI CALCULATOR
+  (function() {
+    const elements = {
+      weight: document.getElementById('dob_weight'),
+      dose: document.getElementById('dob_dose'),
+      strength: document.getElementById('dob_strength'),
+      output: document.getElementById('dob_out'),
+      calcBtn: document.getElementById('btnDobCalc'),
+      resetBtn: document.getElementById('btnDobReset')
+    };
+
+    // 🔧 fungsi asas
+    function num(val) { return parseFloat(val) || 0; }
+    function fmt(val, dec = 2) { return parseFloat(val).toFixed(dec); }
+    function show(el, visible) { el.style.display = visible ? "block" : "none"; }
+
+    if (elements.calcBtn) {
+      elements.calcBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const weight = num(elements.weight.value);
+        const dose = num(elements.dose.value);
+        const strength = num(elements.strength.value);
+
+        if (!weight || weight <= 0 || !dose || dose <= 0) {
+          elements.output.innerHTML = "⚠️ Sila masukkan nilai yang betul.";
+          elements.output.className = "result error";
+          show(elements.output, true);
+          return;
+        }
+
+        // Formula: ml/hr = (dose × weight × 60) / strength
+        const mlph = (dose * weight * 60) / strength;
+
+        // Paparan kepekatan
+        const strengthType = strength === 5000 ? 
+          "Single Strength (5 mg/ml)" : 
+          "Double Strength (10 mg/ml)";
+        const strengthMg = strength / 1000; // mg/ml
+
+        elements.output.innerHTML = `
+          <div style="font-size: 1.1em; margin-bottom: 10px;">
+            ❤️ <strong>Dobutamine Rate: ${fmt(mlph, 2)} ml/jam</strong>
+          </div>
+          <div style="color: #059669;">
+            📊 Dose: ${dose} mcg/kg/min<br>
+            ⚖️ Berat: ${weight} kg<br>
+            🧪 Kepekatan: ${strength} mcg/ml (${strengthMg} mg/ml)<br>
+            📋 ${strengthType}
+          </div>
+        `;
+        elements.output.className = "result";
+        show(elements.output, true);
+      });
+    }
+
+    if (elements.resetBtn) {
+      elements.resetBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        elements.weight.value = "";
+        elements.dose.value = "";
+        elements.strength.value = "5000";
+        show(elements.output, false);
+      });
+    }
+  })();
+
+    // 4. TARGET DOSE CALCULATOR
+    (function() {
+      const elements = {
+        totalContent: document.getElementById('totalContent'),
+        totalUnit: document.getElementById('totalUnit'),
+        dilutionVolume: document.getElementById('dilutionVolume'),
+        customVolume: document.getElementById('customVolume'),
+        targetDose: document.getElementById('targetDose'),
+        targetUnit: document.getElementById('targetUnit'),
+        output: document.getElementById('target_out'),
+        calcBtn: document.getElementById('btnTargetCalc'),
+        resetBtn: document.getElementById('btnTargetReset')
+      };
+
+      // Toggle custom volume input
+      if (elements.dilutionVolume) {
+        elements.dilutionVolume.addEventListener('change', function() {
+          if (this.value === 'custom') {
+            elements.customVolume.classList.add('show');
+          } else {
+            elements.customVolume.classList.remove('show');
+          }
+        });
+      }
+
+      function convertToBase(value, unit) {
+        switch(unit) {
+          case "g": return value * 1000; // g to mg
+          case "mg": return value;
+          case "miu": return value * 1e6; // MIU to U
+          case "u": return value;
+          default: return value;
+        }
+      }
+
+      if (elements.calcBtn) {
+        elements.calcBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const totalContent = num(elements.totalContent.value);
+          const dilutionVolume = elements.dilutionVolume.value === "custom" 
+                                ? num(elements.customVolume.value)
+                                : num(elements.dilutionVolume.value);
+          const targetDose = num(elements.targetDose.value);
+
+          if (!totalContent || !dilutionVolume || !targetDose) {
+            elements.output.innerHTML = "⚠️ Sila masukkan semua nilai dengan betul.";
+            elements.output.className = "result error";
+            show(elements.output, true);
+            return;
+          }
+
+          const totalBase = convertToBase(totalContent, elements.totalUnit.value);
+          const targetBase = convertToBase(targetDose, elements.targetUnit.value);
+          const concentration = totalBase / dilutionVolume;
+          const withdraw = targetBase / concentration;
+
+          let concUnit = (elements.totalUnit.value === "mg" || elements.totalUnit.value === "g") ? "mg/ml" : "U/ml";
+
+          elements.output.innerHTML = `
+            <div style="font-size: 1.1em; margin-bottom: 10px;">
+              💉 <strong>Withdraw: ${fmt(withdraw, 2)} ml</strong>
+            </div>
+            <div style="color: #059669;">
+              🧪 Concentration: ${fmt(concentration, 2)} ${concUnit}
+            </div>
+          `;
+          elements.output.className = "result";
+          show(elements.output, true);
+        });
+      }
+
+      if (elements.resetBtn) {
+        elements.resetBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          elements.totalContent.value = "";
+          elements.dilutionVolume.value = "10";
+          elements.customVolume.value = "";
+          elements.customVolume.classList.remove('show');
+          elements.targetDose.value = "";
+          elements.totalUnit.value = "mg";
+          elements.targetUnit.value = "mg";
+          show(elements.output, false);
+        });
+      }
+    })();
+
+// 5. SLIDING SCALE INSULIN CALCULATOR
+(function() {
+  const regims = {
+    A: [
+      {min:0, max:3.9, u:0},
+      {min:4.0, max:6.9, u:1},
+      {min:7.0, max:8.9, u:2},
+      {min:9.0, max:10.9, u:3},
+      {min:11.0, max:12.9, u:4},
+      {min:13.0, max:Infinity, u:6}
+    ],
+    B: [
+      {min:0, max:3.9, u:0},
+      {min:4.0, max:6.9, u:2},
+      {min:7.0, max:8.9, u:4},
+      {min:9.0, max:10.9, u:6},
+      {min:11.0, max:12.9, u:8},
+      {min:13.0, max:Infinity, u:12}
+    ],
+    C: [
+      {min:0, max:3.9, u:0},
+      {min:4.0, max:6.9, u:3},
+      {min:7.0, max:8.9, u:6},
+      {min:9.0, max:10.9, u:9},
+      {min:11.0, max:12.9, u:12},
+      {min:13.0, max:Infinity, u:18}
+    ],
+    D: [
+      {min:0, max:3.9, u:0},
+      {min:4.0, max:6.9, u:4},
+      {min:7.0, max:8.9, u:8},
+      {min:9.0, max:10.9, u:12},
+      {min:11.0, max:12.9, u:16},
+      {min:13.0, max:Infinity, u:24}
+    ]
+  };
+
+  const elements = {
+    glucose: document.getElementById('glucose'),
+    regimen: document.getElementById('regimen'),
+    output: document.getElementById('insulin_out'),
+    note: document.getElementById('insulin_note'),
+    calcBtn: document.getElementById('btnInsulinCalc'),
+    resetBtn: document.getElementById('btnInsulinReset')
+  };
+
+  function findDose(rows, g) {
+    for (const row of rows) {
+      if (g >= row.min && g <= row.max) return row.u;
+    }
+    return null;
+  }
+
+  if (elements.calcBtn) {
+    elements.calcBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const glucose = num(elements.glucose.value);
+      const selectedRegimen = elements.regimen.value;
+
+      if (!glucose || glucose < 0) {
+        elements.output.innerHTML = '⚠️ Sila masukkan bacaan glukosa yang sah.';
+        elements.output.className = "result error";
+        show(elements.output, true);
+        show(elements.note, false);
+        return;
+      }
+
+      elements.output.className = "result";
+
+      if (selectedRegimen === 'ALL') {
+        let html = `
+          <div style="font-size: 1.1em; margin-bottom: 15px;">
+            🩸 <strong>Hasil untuk bacaan ${glucose.toFixed(1)} mmol/L:</strong>
+          </div>
+          <table style="width:100%;margin-top:10px;border-collapse:collapse;background:white;border-radius:8px;overflow:hidden;font-size:0.9rem;">
+            <thead>
+              <tr style="background:#2563eb;color:white;">
+                <th style="padding:8px;text-align:center;">Regim</th>
+                <th style="padding:8px;text-align:center;">Dos (unit)</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+        
+        for (const key of ['A','B','C','D']) {
+          const dose = findDose(regims[key], glucose);
+          html += `
+            <tr style="border-bottom:1px solid #e5e7eb;">
+              <td style="padding:8px;text-align:center;font-weight:600;">${key}</td>
+              <td style="padding:8px;text-align:center;color:#059669;font-weight:600;">${dose} unit</td>
+            </tr>
+          `;
+        }
+        
+        html += '</tbody></table>';
+        elements.output.innerHTML = html;
+        
+        if (glucose > 13) {
+          elements.note.innerHTML = '⚠️ <strong>Nota:</strong> Dalam Regim A bacaan >13 mmol/L berterusan 3 jam, pertimbangkan beralih ke Regim B (rujuk protokol).';
+          elements.note.style.background = 'linear-gradient(135deg, #eff6ff, #dbeafe)';
+          elements.note.style.borderLeft = '4px solid #3b82f6';
+          show(elements.note, true);
+        } else {
+          show(elements.note, false);
+        }
+      } else {
+        const dose = findDose(regims[selectedRegimen], glucose);
+        elements.output.innerHTML = `
+          <div style="font-size: 1.1em; margin-bottom: 10px;">
+            💉 <strong>Dos Insulin: ${dose} unit</strong>
+          </div>
+          <div style="color: #059669;">
+            🩸 Bacaan: ${glucose.toFixed(1)} mmol/L<br>
+            📋 Regim: ${selectedRegimen}
+          </div>
+        `;
+        
+        if (selectedRegimen === 'A' && glucose > 13) {
+          elements.note.innerHTML = '⚠️ <strong>Nota:</strong> Jika bacaan >13 mmol/L berterusan 3 jam berturut-turut, pertimbangkan tukar ke Regim B.';
+          elements.note.style.background = 'linear-gradient(135deg, #eff6ff, #dbeafe)';
+          elements.note.style.borderLeft = '4px solid #3b82f6';
+          show(elements.note, true);
+        } else {
+          show(elements.note, false);
+        }
+      }
+
+      show(elements.output, true);
+    });
+  }
+
+  if (elements.resetBtn) {
+    elements.resetBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      elements.glucose.value = "";
+      elements.regimen.value = "A";
+      show(elements.output, false);
+      show(elements.note, false);
+    });
+  }
+})();
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./etd-lepeh-service-worker.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
