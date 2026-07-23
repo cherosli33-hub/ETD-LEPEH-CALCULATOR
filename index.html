@@ -1,8 +1,8 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ms">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>ETD Lepeh Medical Calculator - Mobile</title>
   <meta name="theme-color" content="#2563eb">
   <meta name="description" content="ETD Lepeh mobile medical calculator for infusion rate, inotrope dosing, target dose, and insulin scale.">
@@ -15,21 +15,64 @@
   <link rel="apple-touch-icon" href="etd-lepeh-icon-192.png">
   <style>
     :root {
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --accent: #10b981;
-      --accent-dark: #059669;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-      --bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      --card: rgba(255, 255, 255, 0.98);
-      --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-      --text: #1f2937;
-      --text-light: #6b7280;
-      --border: #e5e7eb;
-      --input-focus: #3b82f6;
-      --success-bg: #ecfdf5;
-      --success-border: #10b981;
+      /* Surfaces — cool clinical paper */
+      --bg: #e6ebf0;
+      --panel: #ffffff;
+      --hairline: #d2dae2;
+      --sunken: #f2f5f8;
+
+      /* Readout — always a dark instrument display, both modes */
+      --readout-bg: #101a24;
+      --readout-edge: #24333f;
+      --readout-figure: #eef6fa;
+      --readout-meta: #93aab9;
+      --readout-unit: #5eead4;
+
+      /* Type */
+      --text: #16212b;
+      --text-muted: #5c6c7b;
+
+      /* Signals */
+      --accent: #0f766e;
+      --accent-soft: #d7ece9;
+      --warn: #b45309;
+      --warn-soft: #fdf0dc;
+      --danger: #b42318;
+      --danger-soft: #fdeceb;
+      --note: #1d5b9e;
+      --note-soft: #e6eff9;
+      --alt: #6b47c4;
+      --alt-soft: #ece6fa;
+
+      /* Geometry */
+      --r-panel: 14px;
+      --r-field: 10px;
+      --r-small: 8px;
+
+      --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b1219;
+        --panel: #161f29;
+        --hairline: #2a3846;
+        --sunken: #101922;
+
+        --text: #e8eef4;
+        --text-muted: #91a3b4;
+
+        --accent: #2dd4bf;
+        --accent-soft: #14312e;
+        --warn: #f0b357;
+        --warn-soft: #33260f;
+        --danger: #f38b82;
+        --danger-soft: #351916;
+        --note: #7fb3ea;
+        --note-soft: #12253a;
+        --alt: #b49bf0;
+        --alt-soft: #241b3a;
+      }
     }
 
     * {
@@ -42,370 +85,389 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
-      padding: 10px;
       line-height: 1.5;
       font-size: 16px;
       overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
     .container {
-      max-width: 100%;
+      max-width: 560px;
       margin: 0 auto;
-      padding: 0 5px;
-      padding-bottom: 80px;
+      padding: 16px 14px;
+      padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
     }
 
+    /* ---------- Header ---------- */
     .header {
-      text-align: center;
-      margin-bottom: 20px;
-      background: var(--card);
-      backdrop-filter: blur(10px);
-      border-radius: 15px;
-      padding: 20px 15px;
-      box-shadow: var(--card-shadow);
-      position: sticky;
-      top: 10px;
-      z-index: 100;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding: 0 2px;
     }
 
     .header h1 {
-      font-size: 1.8rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin-bottom: 8px;
-      line-height: 1.2;
-    }
-
-    .header .subtitle {
-      font-size: 0.9rem;
-      color: var(--text-light);
-      font-weight: 500;
-      margin-bottom: 8px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      line-height: 1.25;
     }
 
     .header .author {
-      font-size: 0.8rem;
-      color: var(--text-light);
-      font-style: italic;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      white-space: nowrap;
     }
 
-    /* Tab Navigation */
-    .tab-container {
-      margin-bottom: 20px;
-      background: var(--card);
-      border-radius: 15px;
-      padding: 10px;
-      box-shadow: var(--card-shadow);
-    }
-
-    .tab-buttons {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .tab-buttons-secondary {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-
-    .tab-btn {
-      padding: 12px 8px;
-      border: none;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-align: center;
-      line-height: 1.2;
-      min-height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .tab-btn.active {
-      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-      color: white;
-      transform: scale(1.02);
-      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-    }
-
-    .tab-btn:not(.active) {
-      background: #f8fafc;
-      color: var(--text-light);
-      border: 1px solid var(--border);
-    }
-
-    .tab-btn:not(.active):hover {
-      background: #f1f5f9;
-    }
-
-    /* Calculator Cards */
+    /* ---------- Calculator panel ---------- */
     .calculator-card {
-      background: var(--card);
-      backdrop-filter: blur(10px);
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: var(--card-shadow);
+      background: var(--panel);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-panel);
+      padding: 20px 18px 22px;
       display: none;
-      animation: fadeIn 0.3s ease;
+      animation: rise 0.22s ease-out;
     }
 
-    .calculator-card.active {
-      display: block;
-    }
+    .calculator-card.active { display: block; }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     .calculator-card h2 {
-      font-size: 1.4rem;
+      font-size: 0.72rem;
       font-weight: 700;
-      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--text-muted);
+      padding-bottom: 14px;
       margin-bottom: 20px;
-      text-align: center;
+      border-bottom: 1px solid var(--hairline);
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 10px;
+      gap: 8px;
     }
 
-    .form-group {
-      margin-bottom: 20px;
-    }
+    /* ---------- Fields ---------- */
+    .form-group { margin-bottom: 16px; }
 
     .form-row {
       display: flex;
       flex-direction: column;
-      gap: 15px;
-      margin-bottom: 20px;
+      gap: 16px;
+      margin-bottom: 16px;
     }
 
     .form-row-inline {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 20px;
+      gap: 12px;
+      margin-bottom: 16px;
     }
 
     .form-row-triple {
       display: flex;
       flex-direction: column;
-      gap: 15px;
-      margin-bottom: 20px;
+      gap: 16px;
+      margin-bottom: 16px;
     }
 
     label {
       display: block;
       font-weight: 600;
-      color: var(--text);
-      margin-bottom: 8px;
-      font-size: 0.95rem;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 7px;
     }
 
     input, select {
       width: 100%;
-      padding: 15px;
-      border: 2px solid var(--border);
-      border-radius: 12px;
+      padding: 13px 14px;
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-field);
       font-size: 16px;
-      transition: all 0.3s ease;
-      background: white;
+      font-family: inherit;
+      font-variant-numeric: tabular-nums;
+      color: var(--text);
+      background: var(--sunken);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
       -webkit-appearance: none;
-      min-height: 44px;
+      min-height: 46px;
     }
+
+    select {
+      appearance: none;
+      background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+                        linear-gradient(135deg, currentColor 50%, transparent 50%);
+      background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
+      background-size: 5px 5px, 5px 5px;
+      background-repeat: no-repeat;
+      padding-right: 36px;
+    }
+
+    input::placeholder { color: var(--text-muted); opacity: 0.65; }
 
     input:focus, select:focus {
       outline: none;
-      border-color: var(--input-focus);
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
     }
 
+    input:focus-visible, select:focus-visible, button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* ---------- Buttons ---------- */
     .button-group {
       display: flex;
-      flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       margin-top: 20px;
     }
 
     button {
-      width: 100%;
-      padding: 16px 20px;
       border: none;
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 1rem;
+      border-radius: var(--r-field);
+      font-family: inherit;
+      font-weight: 650;
+      font-size: 0.95rem;
       cursor: pointer;
-      transition: all 0.3s ease;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
       touch-action: manipulation;
-      min-height: 44px;
+      min-height: 48px;
+      transition: opacity 0.15s ease, transform 0.06s ease;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-      color: white;
-      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+      flex: 2;
+      padding: 14px 18px;
+      background: var(--accent);
+      color: #ffffff;
+      letter-spacing: 0.01em;
     }
 
-    .btn-primary:active {
-      transform: translateY(1px);
-      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+    @media (prefers-color-scheme: dark) {
+      .btn-primary { color: #06231f; }
     }
 
     .btn-secondary {
-      background: linear-gradient(135deg, #6b7280, #4b5563);
-      color: white;
-      box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3);
+      flex: 1;
+      padding: 14px 18px;
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--hairline);
     }
 
-    .btn-secondary:active {
-      transform: translateY(1px);
-      box-shadow: 0 2px 8px rgba(107, 114, 128, 0.4);
-    }
+    .btn-primary:active, .btn-secondary:active { transform: translateY(1px); }
+    .btn-primary:hover, .btn-secondary:hover { opacity: 0.9; }
 
+    /* ---------- Readout (signature element) ---------- */
     .result {
       margin-top: 20px;
-      padding: 20px;
-      background: var(--success-bg);
-      border: 2px solid var(--success-border);
-      border-radius: 12px;
+      padding: 18px 16px;
+      background: var(--readout-bg);
+      border: 1px solid var(--readout-edge);
+      border-radius: var(--r-field);
+      color: var(--readout-meta);
+      font-size: 0.86rem;
+      line-height: 1.65;
+      animation: rise 0.25s ease-out;
+    }
+
+    .readout-primary {
+      font-size: 1.45rem;
+      font-weight: 700;
+      line-height: 1.25;
+      letter-spacing: -0.015em;
+      font-variant-numeric: tabular-nums;
+      color: var(--readout-figure);
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--readout-edge);
+    }
+
+    .readout-meta {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-variant-numeric: tabular-nums;
+      color: var(--readout-meta);
+      line-height: 1.75;
+    }
+
+    .result .result-line {
+      font-variant-numeric: tabular-nums;
+      color: var(--readout-meta);
+    }
+
+    .result .result-line:first-child {
+      font-size: 1.45rem;
+      font-weight: 700;
+      line-height: 1.25;
+      letter-spacing: -0.015em;
+      color: var(--readout-figure);
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--readout-edge);
+    }
+
+    .result .result-line:first-child b { font-weight: 700; }
+
+    .result.error {
+      background: var(--danger-soft);
+      border-color: var(--danger);
+      color: var(--danger);
       font-weight: 600;
-      color: #065f46;
-      font-size: 1rem;
-      line-height: 1.6;
-      animation: slideIn 0.4s ease;
+      font-size: 0.92rem;
     }
 
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-10px); }
-      to { opacity: 1; transform: translateX(0); }
+    /* ---------- Readout table (insulin regimen) ---------- */
+    .readout-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-variant-numeric: tabular-nums;
     }
 
-    .info-text {
-      margin-top: 15px;
-      padding: 15px;
-      border-radius: 10px;
-      font-size: 0.85rem;
-      line-height: 1.5;
+    .readout-table th {
+      padding: 8px;
+      text-align: center;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 0.68rem;
+      color: var(--readout-unit);
+      border-bottom: 1px solid var(--readout-edge);
     }
 
+    .readout-table td {
+      padding: 8px;
+      text-align: center;
+      color: var(--readout-meta);
+      border-bottom: 1px solid var(--readout-edge);
+    }
+
+    .readout-table tr:last-child td { border-bottom: none; }
+    .readout-table .is-selected td { color: var(--readout-figure); font-weight: 700; }
+    .readout-table td.dose { color: var(--readout-figure); font-weight: 700; }
+
+    /* ---------- Reference table ---------- */
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
-      background: white;
-      border-radius: 12px;
+      margin-top: 18px;
+      font-size: 0.82rem;
+      font-variant-numeric: tabular-nums;
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-small);
       overflow: hidden;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-      font-size: 0.85rem;
     }
 
     th, td {
-      padding: 10px 8px;
+      padding: 9px 6px;
       text-align: center;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--hairline);
     }
 
     th {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      font-weight: 600;
+      background: var(--sunken);
+      color: var(--text-muted);
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      font-size: 0.66rem;
     }
 
-    tr:nth-child(even) {
-      background-color: #f8fafc;
+    td { color: var(--text); }
+    tbody tr:last-child td { border-bottom: none; }
+
+    /* ---------- Notes ---------- */
+    .info-text {
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: var(--r-small);
+      border-left: 3px solid;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      color: var(--text);
     }
 
-    .error {
-      background: #fef2f2;
-      border-color: var(--danger);
-      color: #b91c1c;
-    }
+    .info-tip    { background: var(--accent-soft); border-left-color: var(--accent); }
+    .info-warn   { background: var(--warn-soft);   border-left-color: var(--warn); }
+    .info-danger { background: var(--danger-soft); border-left-color: var(--danger); }
+    .info-note   { background: var(--note-soft);   border-left-color: var(--note); }
+    .info-alt    { background: var(--alt-soft);    border-left-color: var(--alt); }
 
-    .custom-volume-input {
-      display: none;
-      margin-top: 10px;
-    }
+    .custom-volume-input { display: none; margin-top: 10px; }
+    .show { display: block !important; }
 
-    .show {
-      display: block !important;
-    }
-
-    /* Quick Access Footer */
+    /* ---------- Bottom navigation ---------- */
     .quick-access {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      background: var(--card);
-      border-top: 1px solid var(--border);
-      padding: 8px 5px;
       display: flex;
-      justify-content: space-around;
+      background: var(--panel);
+      border-top: 1px solid var(--hairline);
+      padding: 4px 4px calc(4px + env(safe-area-inset-bottom, 0px));
       z-index: 1000;
-      backdrop-filter: blur(10px);
     }
 
     .quick-btn {
       flex: 1;
-      margin: 0 3px;
-      padding: 8px;
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 0.7rem;
-      font-weight: 500;
-      color: var(--text-light);
-      text-transform: none;
-      letter-spacing: 0;
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 2px;
-      line-height: 1;
-      min-height: 44px;
       justify-content: center;
+      gap: 3px;
+      min-height: 52px;
+      padding: 6px 2px;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      color: var(--text-muted);
+      line-height: 1;
     }
 
     .quick-btn .icon {
-      font-size: 1rem;
+      font-size: 1.05rem;
+      line-height: 1;
+      opacity: 0.75;
+      transition: opacity 0.15s ease;
     }
 
-    .quick-btn.active {
+    .quick-btn.active { color: var(--accent); }
+    .quick-btn.active .icon { opacity: 1; }
+
+    .quick-btn.active::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 22%;
+      right: 22%;
+      height: 2px;
+      border-radius: 0 0 2px 2px;
       background: var(--accent);
-      color: white;
-      border-color: var(--accent);
     }
 
-    /* Dark mode support */
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --card: rgba(30, 41, 59, 0.95);
-        --text: #f1f5f9;
-        --text-light: #94a3b8;
-        --border: #475569;
-      }
-      
-      input, select {
-        background: #334155;
-        color: white;
-        border-color: #475569;
-      }
-      
-      table {
-        background: #334155;
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        transition-duration: 0.001ms !important;
       }
     }
   </style>
@@ -414,24 +476,8 @@
   <div class="container">
     <!-- Header -->
     <div class="header">
-      <h1>ETD Lepeh Medical Calculator</h1>
-      <div class="subtitle">Mobile Medical Calculator</div>
-      <div class="author">By Pakdo Li 🤭</div>
-    </div>
-
-    <!-- Tab Navigation -->
-    <div class="tab-container">
-      <div class="tab-buttons">
-        <button class="tab-btn active" data-tab="infusion">🩸 Infusion Rate</button>
-        <button class="tab-btn" data-tab="time">⏱️ Time Calculator</button>
-      </div>
-      <div class="tab-buttons-secondary">
-        <button class="tab-btn" data-tab="norad">💊 Noradrenaline</button>
-        <button class="tab-btn" data-tab="adrenaline">💓 Adrenaline</button>
-        <button class="tab-btn" data-tab="dobutamine">❤️ Dobutamine</button>
-        <button class="tab-btn" data-tab="target">🎯 Target Dose</button>
-        <button class="tab-btn" data-tab="insulin">💉 Insulin Scale</button>
-      </div>
+      <h1>ETD Lepeh Calculator</h1>
+      <div class="author">Pakdo Li 🤭</div>
     </div>
 
     <!-- 1. INFUSION RATE CALCULATOR -->
@@ -460,7 +506,7 @@
 
       <div class="result" id="infusion_out" style="display:none;"></div>
 
-      <div class="info-text" style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border-left: 4px solid #10b981;">
+      <div class="info-text info-tip">
         📚 <strong>Formula Mudah:</strong> ml/jam = Volume ÷ Masa(jam) • ml/min = (ml/jam) ÷ 60
       </div>
     </div>
@@ -487,12 +533,12 @@
 
       <div class="result" id="time_out" style="display:none;"></div>
       
-      <div class="info-text" style="background: linear-gradient(135deg, #fef3c7, #fde68a); border-left: 4px solid #f59e0b;">
+      <div class="info-text info-warn">
         💡 <strong>Nota Berguna:</strong> Untuk anggaran bila satu-satu syringe pump/infusion habis untuk standby - 
         contoh perjalanan refer jauh... begitulah deh! 🚑✨
       </div>
 
-      <div class="info-text" style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border-left: 4px solid #10b981; margin-top: 15px;">
+      <div class="info-text info-tip">
         📚 <strong>Formula:</strong> Masa (jam) = Volume (ml) ÷ Kadar (ml/jam)
       </div>
     </div>
@@ -527,7 +573,7 @@
 
       <div class="result" id="norad_out" style="display:none;"></div>
 
-      <div class="info-text" style="background: linear-gradient(135deg, #fef2f2, #fecaca); border-left: 4px solid #ef4444;">
+      <div class="info-text info-danger">
         ⚗️ <strong>Formula Noradrenaline:</strong> ml/jam = (dose × berat × 60) ÷ kepekatan<br>
         🧪 <strong>Preparation Notes:</strong> Single strength ≈4mg dalam 50ml → ±80mcg/ml. Double strength ≈ 8mg dalam 50ml → ±160mcg/ml. 4 x strength ≈16mg dalam 50ml → ±320mcg/ml.<br>
         ⚠️ <strong>Important:</strong> Pastikan volume akhir 50ml untuk konsistensi kepekatan yang betul!
@@ -562,7 +608,7 @@
 
   <div class="result" id="adr_out" style="display:none;"></div>
 
-  <div class="info-text" style="background: linear-gradient(135deg, #fef2f2, #fecaca); border-left: 4px solid #ef4444;">
+  <div class="info-text info-danger">
     ⚗️ <strong>Formula Adrenaline:</strong> ml/jam = (dose × berat × 60) ÷ kepekatan<br>
     🧪 <strong>Preparation Notes (dilute in normal saline):</strong><br>
     • Single strength: 3mg dalam 50ml → 60 mcg/ml<br>
@@ -570,7 +616,7 @@
     ⚠️ <strong>Important:</strong> Pastikan volume akhir 50ml untuk konsistensi kepekatan yang betul!
   </div>
 
-  <div class="info-text" style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border-left: 4px solid #3b82f6; margin-top: 15px;">
+  <div class="info-text info-note">
     💡 <strong>Dosing Range:</strong> Typical dose 0.01-0.5 mcg/kg/min<br>
     📋 <strong>Conversion:</strong> 1mg = 1000mcg • 1ml Adrenaline 1:1000 = 1mg
   </div>
@@ -604,7 +650,7 @@
 
   <div class="result" id="dob_out" style="display:none;"></div>
 
-  <div class="info-text" style="background: linear-gradient(135deg, #fef2f2, #fecaca); border-left: 4px solid #ef4444;">
+  <div class="info-text info-danger">
     ⚗️ <strong>Formula Dobutamine:</strong> ml/jam = (dose × berat × 60) ÷ kepekatan<br>
     🧪 <strong>Preparation Notes:</strong><br>
     • Single strength: 250mg dalam 50ml D5/NS → 5 mg/ml (5000 mcg/ml)<br>
@@ -613,7 +659,7 @@
     ⚠️ <strong>Important:</strong> Pastikan volume akhir 50ml untuk konsistensi kepekatan yang betul!
   </div>
 
-  <div class="info-text" style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border-left: 4px solid #3b82f6; margin-top: 15px;">
+  <div class="info-text info-note">
     💡 <strong>Dosing Range:</strong> Typical dose 2.5-20 mcg/kg/min<br>
     📋 <strong>Clinical Use:</strong> Inotropic support • Cardiac output augmentation<br>
     🔄 <strong>Conversion:</strong> 1 mg = 1000 mcg
@@ -667,7 +713,7 @@
 
       <div class="result" id="target_out" style="display:none;"></div>
 
-      <div class="info-text" style="background: linear-gradient(135deg, #ddd6fe, #c4b5fd); border-left: 4px solid #8b5cf6;">
+      <div class="info-text info-alt">
         😅 <strong>Untuk yang malas kira manual:</strong> Atau pening dengan doses paed medication - boleh try kira sini! 
       </div>
     </div>
@@ -699,7 +745,7 @@
       </div>
 
       <div class="result" id="insulin_out" style="display:none;"></div>
-      <div id="insulin_note" class="info-text" style="display:none;"></div>
+      <div id="insulin_note" class="info-text info-warn" style="display:none;"></div>
 
       <table style="margin-top: 20px;">
         <thead>
@@ -721,7 +767,7 @@
         </tbody>
       </table>
 
-      <div class="info-text" style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border-left: 4px solid #3b82f6;">
+      <div class="info-text info-note">
         ⚠️ <strong>Nota Penting:</strong> Untuk Regim A — jika bacaan >13 mmol/L berterusan 3 jam berturut-turut, 
         pertimbangkan tukar ke Regim B (ikut protokol klinikal setempat).<br>
         👨‍⚕️ <strong>Safety First:</strong> Apo apo tanyo dulu deh sebelum apply ke patient! 
@@ -878,10 +924,10 @@
           const mlpm = mlph / 60;
 
           elements.output.innerHTML = `
-            <div style="font-size: 1.1em; margin-bottom: 10px;">
+            <div class="readout-primary">
               📊 <strong>Kadar: ${fmt(mlph)} ml/jam</strong>
             </div>
-            <div style="color: #059669;">
+            <div class="readout-meta">
               ⏱️ ${fmt(mlpm, 3)} ml/min<br>
               📋 Volume: ${fmt(vol, 2)} ml • Masa: ${fmt(totalHours, 3)} jam
             </div>
@@ -930,10 +976,10 @@
           const mPart = Math.round((hours - hPart) * 60);
 
           elements.output.innerHTML = `
-            <div style="font-size: 1.1em; margin-bottom: 10px;">
+            <div class="readout-primary">
               ⏰ <strong>Masa: ${fmt(hours, 2)} jam</strong>
             </div>
-            <div style="color: #059669;">
+            <div class="readout-meta">
               📅 Approximately ${hPart} jam ${mPart} minit<br>
               📋 Volume: ${fmt(vol, 2)} ml • Rate: ${fmt(rate, 2)} ml/jam
             </div>
@@ -981,10 +1027,10 @@
           const mlph = (dose * weight * 60) / strength;
 
           elements.output.innerHTML = `
-            <div style="font-size: 1.1em; margin-bottom: 10px;">
+            <div class="readout-primary">
               💊 <strong>Noradrenaline Rate: ${fmt(mlph)} ml/jam</strong>
             </div>
-            <div style="color: #059669;">
+            <div class="readout-meta">
               📊 Dose: ${dose} mcg/kg/min<br>
               ⚖️ Berat: ${weight} kg<br>
               🧪 Kepekatan: ${strength} mcg/ml
@@ -1103,10 +1149,10 @@
         const strengthMg = strength / 1000; // mg/ml
 
         elements.output.innerHTML = `
-          <div style="font-size: 1.1em; margin-bottom: 10px;">
+          <div class="readout-primary">
             ❤️ <strong>Dobutamine Rate: ${fmt(mlph, 2)} ml/jam</strong>
           </div>
-          <div style="color: #059669;">
+          <div class="readout-meta">
             📊 Dose: ${dose} mcg/kg/min<br>
             ⚖️ Berat: ${weight} kg<br>
             🧪 Kepekatan: ${strength} mcg/ml (${strengthMg} mg/ml)<br>
@@ -1188,10 +1234,10 @@
           let concUnit = (elements.totalUnit.value === "mg" || elements.totalUnit.value === "g") ? "mg/ml" : "U/ml";
 
           elements.output.innerHTML = `
-            <div style="font-size: 1.1em; margin-bottom: 10px;">
+            <div class="readout-primary">
               💉 <strong>Withdraw: ${fmt(withdraw, 2)} ml</strong>
             </div>
-            <div style="color: #059669;">
+            <div class="readout-meta">
               🧪 Concentration: ${fmt(concentration, 2)} ${concUnit}
             </div>
           `;
@@ -1286,14 +1332,14 @@
 
       if (selectedRegimen === 'ALL') {
         let html = `
-          <div style="font-size: 1.1em; margin-bottom: 15px;">
+          <div class="readout-primary">
             🩸 <strong>Hasil untuk bacaan ${glucose.toFixed(1)} mmol/L:</strong>
           </div>
-          <table style="width:100%;margin-top:10px;border-collapse:collapse;background:white;border-radius:8px;overflow:hidden;font-size:0.9rem;">
+          <table class="readout-table">
             <thead>
-              <tr style="background:#2563eb;color:white;">
-                <th style="padding:8px;text-align:center;">Regim</th>
-                <th style="padding:8px;text-align:center;">Dos (unit)</th>
+              <tr>
+                <th>Regim</th>
+                <th>Dos (unit)</th>
               </tr>
             </thead>
             <tbody>
@@ -1302,9 +1348,9 @@
         for (const key of ['A','B','C','D']) {
           const dose = findDose(regims[key], glucose);
           html += `
-            <tr style="border-bottom:1px solid #e5e7eb;">
-              <td style="padding:8px;text-align:center;font-weight:600;">${key}</td>
-              <td style="padding:8px;text-align:center;color:#059669;font-weight:600;">${dose} unit</td>
+            <tr>
+              <td>${key}</td>
+              <td class="dose">${dose} unit</td>
             </tr>
           `;
         }
@@ -1314,8 +1360,6 @@
         
         if (glucose > 13) {
           elements.note.innerHTML = '⚠️ <strong>Nota:</strong> Dalam Regim A bacaan >13 mmol/L berterusan 3 jam, pertimbangkan beralih ke Regim B (rujuk protokol).';
-          elements.note.style.background = 'linear-gradient(135deg, #eff6ff, #dbeafe)';
-          elements.note.style.borderLeft = '4px solid #3b82f6';
           show(elements.note, true);
         } else {
           show(elements.note, false);
@@ -1323,10 +1367,10 @@
       } else {
         const dose = findDose(regims[selectedRegimen], glucose);
         elements.output.innerHTML = `
-          <div style="font-size: 1.1em; margin-bottom: 10px;">
+          <div class="readout-primary">
             💉 <strong>Dos Insulin: ${dose} unit</strong>
           </div>
-          <div style="color: #059669;">
+          <div class="readout-meta">
             🩸 Bacaan: ${glucose.toFixed(1)} mmol/L<br>
             📋 Regim: ${selectedRegimen}
           </div>
@@ -1334,8 +1378,6 @@
         
         if (selectedRegimen === 'A' && glucose > 13) {
           elements.note.innerHTML = '⚠️ <strong>Nota:</strong> Jika bacaan >13 mmol/L berterusan 3 jam berturut-turut, pertimbangkan tukar ke Regim B.';
-          elements.note.style.background = 'linear-gradient(135deg, #eff6ff, #dbeafe)';
-          elements.note.style.borderLeft = '4px solid #3b82f6';
           show(elements.note, true);
         } else {
           show(elements.note, false);
