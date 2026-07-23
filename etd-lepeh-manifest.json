@@ -2,7 +2,7 @@
   "name": "ETD Lepeh Medical Calculator",
   "short_name": "ETD Calc",
   "description": "Mobile medical calculator for infusion rate, inotrope dosing, target dose, and insulin scale.",
-  "start_url": "./index.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
