@@ -4,24 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>ETD Lepeh Medical Calculator - Mobile</title>
-  <meta name="theme-color" content="#2563eb">
+  <meta name="theme-color" content="#061225">
   <meta name="description" content="ETD Lepeh mobile medical calculator for infusion rate, inotrope dosing, target dose, and insulin scale.">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="ETD Calculator">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="etd-lepeh-manifest.json">
   <link rel="icon" type="image/png" sizes="192x192" href="etd-lepeh-icon-192.png">
   <link rel="apple-touch-icon" href="etd-lepeh-icon-192.png">
   <style>
     :root {
-      /* Surfaces — cool clinical paper */
+      /* Surfaces: cool clinical paper */
       --bg: #e6ebf0;
       --panel: #ffffff;
       --hairline: #d2dae2;
       --sunken: #f2f5f8;
 
-      /* Readout — always a dark instrument display, both modes */
+      /* Readout: always a dark instrument display, both modes */
       --readout-bg: #101a24;
       --readout-edge: #24333f;
       --readout-figure: #eef6fa;
@@ -470,19 +470,292 @@
         transition-duration: 0.001ms !important;
       }
     }
+    /* ---------- 2026 mobile redesign ---------- */
+    :root {
+      --bg: #061225;
+      --panel: #0b1d38;
+      --panel-raised: #102747;
+      --hairline: #2d4d77;
+      --sunken: #091a31;
+      --text: #f5f8ff;
+      --text-muted: #a9bddd;
+      --accent: #11d7b4;
+      --accent-strong: #02b995;
+      --accent-soft: rgba(17, 215, 180, .13);
+      --readout-bg: linear-gradient(135deg, rgba(4, 98, 91, .76), rgba(4, 57, 65, .9));
+      --readout-edge: #19e6c0;
+      --readout-figure: #58f1df;
+      --readout-meta: #c9fff8;
+      --readout-unit: #58f1df;
+      --warn: #ffbd57;
+      --warn-soft: rgba(255, 189, 87, .1);
+      --danger: #ff668f;
+      --danger-soft: rgba(255, 102, 143, .1);
+      --note: #67c7ff;
+      --note-soft: rgba(103, 199, 255, .1);
+      --alt: #a998ff;
+      --alt-soft: rgba(169, 152, 255, .1);
+      --r-panel: 18px;
+      --r-field: 13px;
+      --r-small: 11px;
+    }
+
+    html { background: #061225; }
+    body {
+      background:
+        radial-gradient(circle at 15% -10%, rgba(26, 96, 177, .28), transparent 35%),
+        radial-gradient(circle at 100% 15%, rgba(68, 67, 180, .17), transparent 32%),
+        #061225;
+      color-scheme: dark;
+      min-height: 100dvh;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.014) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: linear-gradient(to bottom, black, transparent 70%);
+    }
+    .container {
+      width: min(100%, 580px);
+      max-width: 580px;
+      min-height: 100dvh;
+      padding: max(22px, env(safe-area-inset-top)) 18px calc(96px + env(safe-area-inset-bottom));
+      position: relative;
+    }
+    .header {
+      align-items: center;
+      margin: 0 0 20px;
+      padding: 4px 5px 0;
+    }
+    .brand { display: flex; align-items: center; gap: 13px; }
+    .brand-mark {
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      background: linear-gradient(145deg, rgba(103,199,255,.2), rgba(17,215,180,.08));
+      border: 1px solid rgba(142, 198, 255, .25);
+      font-size: 29px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 10px 28px rgba(0,0,0,.2);
+    }
+    .brand-copy h1 { font-size: 1.62rem; letter-spacing: -.035em; line-height: 1.08; }
+    .brand-subtitle { color: #b8c9e8; font-weight: 650; font-size: .98rem; margin-top: 3px; }
+    .brand-tagline { color: #849abe; font-size: .76rem; font-style: italic; margin-top: 4px; }
+    .info-button {
+      flex: 0 0 40px;
+      width: 40px;
+      min-height: 40px;
+      border-radius: 50%;
+      border: 1px solid #5676a1;
+      background: rgba(13, 34, 65, .76);
+      color: #dbe9ff;
+      font: 750 1.1rem/1 Georgia, serif;
+      box-shadow: inset 0 0 0 4px rgba(81,119,171,.1);
+    }
+    .mode-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      padding: 4px;
+      margin: 0 0 18px;
+      border: 1px solid #29476f;
+      border-radius: 999px;
+      background: rgba(6, 18, 37, .72);
+      box-shadow: inset 0 1px 8px rgba(0,0,0,.28);
+    }
+    .mode-btn {
+      min-height: 52px;
+      border-radius: 999px;
+      color: #afc2df;
+      background: transparent;
+      font-size: .93rem;
+      white-space: nowrap;
+    }
+    .mode-btn.active {
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      box-shadow: 0 8px 24px rgba(17, 215, 180, .2), inset 0 1px 0 rgba(255,255,255,.3);
+    }
+    .calculator-card {
+      padding: 20px 17px 18px;
+      background: linear-gradient(155deg, rgba(13, 38, 70, .97), rgba(7, 24, 47, .97));
+      border-color: #31557f;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.045), 0 20px 50px rgba(0, 5, 18, .22);
+    }
+    .calculator-card h2 {
+      padding: 0;
+      margin: 0 0 6px;
+      border: 0;
+      color: #f5f8ff;
+      font-size: 1.22rem;
+      line-height: 1.25;
+      text-transform: none;
+      letter-spacing: -.018em;
+    }
+    .card-subtitle { color: var(--text-muted); font-size: .85rem; margin: 0 0 22px 34px; }
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 38px;
+      margin: -4px 0 16px;
+      padding: 0 10px;
+      color: #b9cbea;
+      background: transparent;
+      font-size: .82rem;
+    }
+    label {
+      color: #e4ecfa;
+      font-size: .83rem;
+      text-transform: none;
+      letter-spacing: 0;
+      margin-bottom: 8px;
+    }
+    input, select {
+      min-height: 55px;
+      padding: 14px 15px;
+      color: #f7faff;
+      background-color: rgba(7, 25, 48, .82);
+      border-color: #315d89;
+      font-weight: 650;
+    }
+    input::placeholder { color: #6f86a9; opacity: 1; font-weight: 500; }
+    input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(17,215,180,.14); }
+    .form-row, .form-row-triple { gap: 0; margin-bottom: 0; }
+    .form-group { margin-bottom: 17px; }
+    #infusion-card .form-row-triple { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    #infusion-card .form-group:first-child { grid-column: 1 / -1; }
+    .button-group { margin-top: 5px; flex-wrap: wrap; }
+    .btn-primary {
+      min-height: 57px;
+      flex-basis: 100%;
+      color: #fff;
+      background: linear-gradient(135deg, #09c9a5, #00a982);
+      border: 1px solid #2bf1ce;
+      box-shadow: 0 12px 30px rgba(1, 182, 144, .18), inset 0 1px 0 rgba(255,255,255,.28);
+      text-transform: uppercase;
+      letter-spacing: .025em;
+    }
+    .btn-primary::before { content: "▦"; margin-right: 9px; }
+    .btn-secondary { flex: 1 1 100%; min-height: 43px; padding: 8px 14px; border-color: transparent; color: #90a6c8; }
+    .result {
+      margin-top: 16px;
+      padding: 19px 16px;
+      background: var(--readout-bg);
+      border-color: var(--readout-edge);
+      box-shadow: inset 0 1px 18px rgba(17,215,180,.06), 0 12px 35px rgba(0,0,0,.17);
+      text-align: center;
+    }
+    .readout-primary, .result .result-line:first-child {
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+      border-bottom-color: rgba(92, 246, 223, .2);
+      color: var(--readout-figure);
+      font-size: clamp(1.48rem, 7vw, 2.25rem);
+      letter-spacing: -.035em;
+    }
+    .readout-meta { color: var(--readout-meta); font-family: inherit; font-size: .8rem; }
+    .info-text {
+      position: relative;
+      margin-top: 15px;
+      padding: 14px;
+      color: #bcd0ec;
+      background: rgba(20, 48, 83, .72);
+      border: 1px solid #31557f;
+      border-left-width: 1px;
+      line-height: 1.55;
+    }
+    .info-text strong { color: #e8f1ff; }
+    .info-tip { border-color: #31557f; background: rgba(20, 48, 83, .72); }
+    table { border-color: #31557f; color: #d8e5f8; }
+    th { background: #122a4a; color: #9fb8dc; }
+    th, td { border-bottom-color: #27486e; }
+    td { color: #d8e5f8; }
+    .drug-list { display: grid; gap: 13px; margin-top: 18px; }
+    .drug-card {
+      width: 100%;
+      min-height: 112px;
+      display: grid;
+      grid-template-columns: 54px 1fr 42px;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      text-align: left;
+      color: #fff;
+      background: linear-gradient(135deg, rgba(31, 36, 78, .92), rgba(14, 31, 63, .96));
+      border: 1px solid #3a5886;
+      border-left: 5px solid var(--drug-color, var(--accent));
+      border-radius: var(--r-panel);
+    }
+    .drug-card:active { transform: scale(.985); }
+    .drug-icon { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--drug-color) 18%, transparent); font-size: 1.65rem; }
+    .drug-copy strong { display: block; color: var(--drug-color); font-size: 1.02rem; margin-bottom: 3px; }
+    .drug-copy small { display: block; color: #b5c5df; font-weight: 500; line-height: 1.35; }
+    .drug-chip { display: inline-block; margin-top: 9px; padding: 4px 9px; border: 1px solid #47618b; border-radius: 8px; background: rgba(113,134,184,.18); color: #c9d5ec; font-size: .69rem; }
+    .drug-arrow { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; background: #1d3a66; color: #fff; font-size: 1.35rem; }
+    .quick-access {
+      max-width: 580px;
+      margin: 0 auto;
+      padding: 7px 8px calc(7px + env(safe-area-inset-bottom));
+      background: rgba(5, 18, 37, .94);
+      border-top-color: #29476f;
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+    }
+    .quick-btn { min-height: 58px; border-radius: 12px; color: #9fb5d6; font-size: .66rem; gap: 5px; }
+    .quick-btn .icon { font-size: 1.25rem; }
+    .quick-btn.active { color: #2de3c3; background: linear-gradient(180deg, rgba(17,215,180,.12), rgba(17,215,180,.035)); }
+    .quick-btn.active::before { display: none; }
+    .screen-heading { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+    .screen-heading .section-icon { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 50%; background: rgba(255, 179, 75, .12); color: #ffb34b; font-size: 1.45rem; }
+    .screen-heading h2 { margin: 0; }
+    .screen-description { margin: 0 0 18px 60px; color: #aebfda; font-size: .82rem; }
+    @media (min-width: 520px) {
+      .container { padding-left: 22px; padding-right: 22px; }
+      .form-row-triple:not(#infusion-card .form-row-triple) { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .calculator-card:not(#infusion-card) .form-row-triple .form-group:last-child { grid-column: 1 / -1; }
+    }
+    @media (max-width: 370px) {
+      .brand-mark { width: 46px; height: 46px; }
+      .brand-copy h1 { font-size: 1.35rem; }
+      .mode-btn { font-size: .8rem; }
+      .drug-card { grid-template-columns: 45px 1fr 36px; padding: 12px 10px; }
+      .drug-icon { width: 44px; height: 44px; }
+      .quick-btn { font-size: .59rem; }
+    }
+    @media (prefers-reduced-transparency: reduce) {
+      .quick-access { backdrop-filter: none; -webkit-backdrop-filter: none; background: #061225; }
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <!-- Header -->
-    <div class="header">
-      <h1>ETD Lepeh Calculator</h1>
-      <div class="author">Pakdo Li 🤭</div>
-    </div>
+    <header class="header">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">🚑</div>
+        <div class="brand-copy">
+          <h1>ETD Lepeh</h1>
+          <div class="brand-subtitle">Medical Calculator</div>
+          <div class="brand-tagline">By PakDo Lie</div>
+        </div>
+      </div>
+      <button class="info-button" type="button" aria-label="Maklumat aplikasi" id="btnAppInfo">i</button>
+    </header>
+
+    <nav class="mode-switch" aria-label="Drug dan target calculator">
+      <button class="mode-btn" type="button" data-tab="drugs">◇&nbsp; Drug Calculators</button>
+      <button class="mode-btn" type="button" data-tab="target">◎&nbsp; Target Dose</button>
+    </nav>
 
     <!-- 1. INFUSION RATE CALCULATOR -->
     <div class="calculator-card active" id="infusion-card">
-      <h2>🩸 Infusion Rate Calculator</h2>
+      <h2>💧 Infusion Rate Calculator</h2>
+      <p class="card-subtitle">Calculate IV infusion rate easily</p>
       
       <div class="form-row-triple">
         <div class="form-group">
@@ -513,7 +786,8 @@
 
     <!-- 2. TIME ESTIMATION CALCULATOR -->
     <div class="calculator-card" id="time-card">
-      <h2>⏱️ Estimation Time Calculator</h2>
+      <h2>◷ Estimation Time Calculator</h2>
+      <p class="card-subtitle">Estimate when an infusion will finish</p>
       
       <div class="form-row">
         <div class="form-group">
@@ -543,9 +817,50 @@
       </div>
     </div>
 
+    <!-- DRUG CALCULATORS HUB -->
+    <section class="calculator-card" id="drugs-card">
+      <div class="screen-heading">
+        <div class="section-icon" aria-hidden="true">💊</div>
+        <h2>Drug Calculators</h2>
+      </div>
+      <p class="screen-description">Select a drug to calculate infusion rate or dose</p>
+
+      <div class="drug-list">
+        <button class="drug-card" type="button" data-open-calculator="norad" style="--drug-color:#ff5d91">
+          <span class="drug-icon" aria-hidden="true">💊</span>
+          <span class="drug-copy">
+            <strong>Noradrenaline</strong>
+            <small>Calculate infusion rate based on target dose</small>
+            <span class="drug-chip">Common: 4 mg in 50 mL (80 mcg/mL)</span>
+          </span>
+          <span class="drug-arrow" aria-hidden="true">›</span>
+        </button>
+        <button class="drug-card" type="button" data-open-calculator="adrenaline" style="--drug-color:#ff9c45">
+          <span class="drug-icon" aria-hidden="true">💊</span>
+          <span class="drug-copy">
+            <strong>Adrenaline</strong>
+            <small>Calculate infusion rate based on target dose</small>
+            <span class="drug-chip">Common: 3 mg in 50 mL (60 mcg/mL)</span>
+          </span>
+          <span class="drug-arrow" aria-hidden="true">›</span>
+        </button>
+        <button class="drug-card" type="button" data-open-calculator="dobutamine" style="--drug-color:#62c9ff">
+          <span class="drug-icon" aria-hidden="true">💊</span>
+          <span class="drug-copy">
+            <strong>Dobutamine</strong>
+            <small>Calculate infusion rate based on target dose</small>
+            <span class="drug-chip">Common: 250 mg in 50 mL (5 mg/mL)</span>
+          </span>
+          <span class="drug-arrow" aria-hidden="true">›</span>
+        </button>
+      </div>
+    </section>
+
     <!-- 3. NORADRENALINE CALCULATOR -->
     <div class="calculator-card" id="norad-card">
-      <h2>💊 Noradrenaline Dose Calculator</h2>
+      <button class="back-button" type="button" data-tab="drugs">‹ Back to Drugs</button>
+      <h2>💊 Noradrenaline Calculator</h2>
+      <p class="card-subtitle">Calculate infusion rate based on target dose</p>
       
       <div class="form-row-triple">
         <div class="form-group">
@@ -581,7 +896,9 @@
     </div>
 
 <div class="calculator-card" id="adrenaline-card">
-  <h2>💓 Adrenaline IVI Calculator</h2>
+  <button class="back-button" type="button" data-tab="drugs">‹ Back to Drugs</button>
+  <h2>💊 Adrenaline Calculator</h2>
+  <p class="card-subtitle">Calculate infusion rate based on target dose</p>
   
   <div class="form-row-triple">
     <div class="form-group">
@@ -623,7 +940,9 @@
 </div>
 
 <div class="calculator-card" id="dobutamine-card">
-  <h2>❤️ Dobutamine IVI Calculator</h2>
+  <button class="back-button" type="button" data-tab="drugs">‹ Back to Drugs</button>
+  <h2>💊 Dobutamine Calculator</h2>
+  <p class="card-subtitle">Calculate infusion rate based on target dose</p>
   
   <div class="form-row-triple">
     <div class="form-group">
@@ -768,7 +1087,7 @@
       </table>
 
       <div class="info-text info-note">
-        ⚠️ <strong>Nota Penting:</strong> Untuk Regim A — jika bacaan >13 mmol/L berterusan 3 jam berturut-turut, 
+        ⚠️ <strong>Nota Penting:</strong> Untuk Regim A, jika bacaan >13 mmol/L berterusan 3 jam berturut-turut,
         pertimbangkan tukar ke Regim B (ikut protokol klinikal setempat).<br>
         👨‍⚕️ <strong>Safety First:</strong> Apo apo tanyo dulu deh sebelum apply ke patient! 
       </div>
@@ -784,22 +1103,6 @@
         <span class="icon">⏱️</span>
         <span>Time</span>
       </button>
-      <button class="quick-btn" data-tab="norad">
-        <span class="icon">💊</span>
-        <span>Norad</span>
-     </button>
-              <button class="quick-btn" data-tab="adrenaline">
-                  <span class="icon">💓</span>
-                 <span>Adr</span>
-           </button>
-        <button class="quick-btn" data-tab="dobutamine">
-           <span class="icon">❤️</span>
-          <span>Dob</span>
-       </button>
-      <button class="quick-btn" data-tab="target">
-        <span class="icon">🎯</span>
-        <span>Target</span>
-      </button>
       <button class="quick-btn" data-tab="insulin">
         <span class="icon">💉</span>
         <span>Insulin</span>
@@ -810,16 +1113,17 @@
   <script>
     // Utility functions
     function num(v) { return parseFloat(v) || 0; }
-    function fmt(n, dp = 2) { return isFinite(n) ? n.toFixed(dp) : '—'; }
+    function fmt(n, dp = 2) { return isFinite(n) ? n.toFixed(dp) : '-'; }
     function show(el, on = true) { 
       if (el) el.style.display = on ? 'block' : 'none'; 
     }
 
     // Tab switching functionality
     function initTabs() {
-      const tabButtons = document.querySelectorAll('.tab-btn');
+      const tabButtons = document.querySelectorAll('.mode-btn, .back-button');
       const quickButtons = document.querySelectorAll('.quick-btn');
       const calculatorCards = document.querySelectorAll('.calculator-card');
+      const drugButtons = document.querySelectorAll('[data-open-calculator]');
 
       function switchTab(tabId) {
         // Hide all cards
@@ -838,8 +1142,10 @@
         }
 
         // Activate corresponding buttons
-        const tabBtn = document.querySelector(`[data-tab="${tabId}"]`);
-        const quickBtn = document.querySelector(`.quick-btn[data-tab="${tabId}"]`);
+        const topTab = ['norad', 'adrenaline', 'dobutamine'].includes(tabId) ? 'drugs' : tabId;
+        const tabBtn = document.querySelector(`.mode-btn[data-tab="${topTab}"]`);
+        const bottomTab = tabId;
+        const quickBtn = document.querySelector(`.quick-btn[data-tab="${bottomTab}"]`);
         if (tabBtn) tabBtn.classList.add('active');
         if (quickBtn) quickBtn.classList.add('active');
 
@@ -859,6 +1165,20 @@
           }
         });
       });
+
+      drugButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+          e.preventDefault();
+          switchTab(button.dataset.openCalculator);
+        });
+      });
+
+      const infoButton = document.getElementById('btnAppInfo');
+      if (infoButton) {
+        infoButton.addEventListener('click', () => {
+          window.alert('ETD Lepeh Medical Calculator\nBy PakDo Lie\n\nSemak semua keputusan mengikut protokol klinikal setempat.');
+        });
+      }
     }
 
     // Initialize tabs on page load
@@ -1085,7 +1405,7 @@
       const strengthType = strength === 60 ? "Single Strength" :
                            strength === 120 ? "Double Strength" : "Custom";
 
-      // Kemas & tersusun — tiada baris kosong pelik
+      // Kemas dan tersusun, tiada baris kosong pelik
       elements.output.innerHTML = `
         <div class="result-line">💓 <b>Adrenaline Rate:</b> ${fmt(mlph, 2)} ml/jam</div>
         <div class="result-line">📊 <b>Dose:</b> ${dose} mcg/kg/min</div>

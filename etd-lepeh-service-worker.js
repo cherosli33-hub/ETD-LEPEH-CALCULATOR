@@ -1,4 +1,4 @@
-const CACHE_NAME = "etd-lepeh-calculator-v2";
+const CACHE_NAME = "etd-lepeh-calculator-v7";
 const APP_FILES = [
   "./",
   "./etd-lepeh-manifest.json",
