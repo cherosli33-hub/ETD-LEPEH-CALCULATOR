@@ -748,12 +748,12 @@
     </header>
 
     <nav class="mode-switch" aria-label="Drug dan target calculator">
-      <button class="mode-btn" type="button" data-tab="drugs">◇&nbsp; Drug Calculators</button>
+      <button class="mode-btn active" type="button" data-tab="drugs">◇&nbsp; Drug Calculators</button>
       <button class="mode-btn" type="button" data-tab="target">◎&nbsp; Target Dose</button>
     </nav>
 
     <!-- 1. INFUSION RATE CALCULATOR -->
-    <div class="calculator-card active" id="infusion-card">
+    <div class="calculator-card" id="infusion-card">
       <h2>💧 Infusion Rate Calculator</h2>
       <p class="card-subtitle">Calculate IV infusion rate easily</p>
       
@@ -818,7 +818,7 @@
     </div>
 
     <!-- DRUG CALCULATORS HUB -->
-    <section class="calculator-card" id="drugs-card">
+    <section class="calculator-card active" id="drugs-card">
       <div class="screen-heading">
         <div class="section-icon" aria-hidden="true">💊</div>
         <h2>Drug Calculators</h2>
@@ -1095,7 +1095,7 @@
 
     <!-- Quick Access Footer -->
     <div class="quick-access">
-      <button class="quick-btn active" data-tab="infusion">
+      <button class="quick-btn" data-tab="infusion">
         <span class="icon">🩸</span>
         <span>Rate</span>
       </button>
