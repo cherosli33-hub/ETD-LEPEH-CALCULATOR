@@ -1065,34 +1065,68 @@
       </div>
     </div>
 
-    <!-- DRUG GUIDE: reference-only drugs, separate from existing calculators -->
+    <!-- DRUG GUIDE: compact list; tap a drug to reveal details -->
     <div class="calculator-card guide-hero" id="guide-card">
       <h2>📖 Drug Guide</h2>
-      <p class="card-subtitle">Quick preparation & dose reference</p>
+      <p class="card-subtitle">Klik nama ubat untuk lihat dose, preparation & administration</p>
 
-      <div class="guide-priority">
-        <h3>⚡ Vasopressin — Septic / Vasodilatory Shock</h3>
-        <div class="guide-grid">
-          <div class="guide-item"><span>Administration</span><strong>Continuous IV infusion</strong></div>
-          <div class="guide-item"><span>Stock</span><strong>20 IU/mL</strong></div>
-          <div class="guide-item"><span>Preparation</span><strong>20 IU → final volume 20 mL NS/D5</strong></div>
-          <div class="guide-item"><span>Final concentration</span><strong>1 IU/mL</strong></div>
-          <div class="guide-item"><span>Dose</span><strong>0.01–0.04 IU/min</strong></div>
-          <div class="guide-item"><span>Infusion rate</span><strong>0.6–2.4 mL/hr</strong></div>
-        </div>
+      <div class="drug-list" id="guideDrugList">
+        <button class="drug-card" type="button" data-guide-drug="vasopressin">
+          <span class="drug-icon" aria-hidden="true">💉</span>
+          <span class="drug-copy"><strong>Vasopressin</strong><small>Septic / Vasodilatory Shock</small></span>
+          <span class="drug-arrow" aria-hidden="true">›</span>
+        </button>
+        <button class="drug-card" type="button" data-guide-drug="gtn">
+          <span class="drug-icon" aria-hidden="true">💧</span>
+          <span class="drug-copy"><strong>Glyceryl Trinitrate (GTN)</strong><small>IV infusion</small></span>
+          <span class="drug-arrow" aria-hidden="true">›</span>
+        </button>
       </div>
 
-      <div class="guide-secondary">
-        <h3>Other Regimen</h3>
-        <div class="guide-grid">
-          <div class="guide-item"><span>Preparation</span><strong>20 IU → final volume 100 mL NS/D5</strong></div>
-          <div class="guide-item"><span>Final concentration</span><strong>0.2 IU/mL</strong></div>
-          <div class="guide-item"><span>Administration</span><strong>IV infusion over 15 minutes</strong></div>
+      <div id="guide-vasopressin" class="guide-detail" style="display:none;">
+        <button class="back-button guide-back" type="button">‹ Back to Drug Guide</button>
+        <h2>💉 Vasopressin</h2>
+        <div class="guide-priority">
+          <h3>⚡ Septic / Vasodilatory Shock</h3>
+          <div class="guide-grid">
+            <div class="guide-item"><span>Administration</span><strong>Continuous IV infusion</strong></div>
+            <div class="guide-item"><span>Stock</span><strong>20 IU/mL</strong></div>
+            <div class="guide-item"><span>Preparation</span><strong>20 IU → final volume 20 mL NS/D5</strong></div>
+            <div class="guide-item"><span>Final concentration</span><strong>1 IU/mL</strong></div>
+            <div class="guide-item"><span>Dose</span><strong>0.01–0.04 IU/min</strong></div>
+            <div class="guide-item"><span>Infusion rate</span><strong>0.6–2.4 mL/hr</strong></div>
+          </div>
         </div>
+        <div class="guide-secondary">
+          <h3>Other Regimen</h3>
+          <div class="guide-grid">
+            <div class="guide-item"><span>Preparation</span><strong>20 IU → final volume 100 mL NS/D5</strong></div>
+            <div class="guide-item"><span>Final concentration</span><strong>0.2 IU/mL</strong></div>
+            <div class="guide-item"><span>Administration</span><strong>IV infusion over 15 minutes</strong></div>
+          </div>
+        </div>
+        <div class="info-text info-tip" style="margin-top:14px;">📋 <strong>Local note:</strong> Septic / vasodilatory shock dipaparkan dahulu untuk rujukan pantas.</div>
       </div>
 
-      <div class="info-text info-tip" style="margin-top:14px;">
-        📋 <strong>Local note:</strong> Septic / vasodilatory shock dipaparkan dahulu untuk rujukan pantas.
+      <div id="guide-gtn" class="guide-detail" style="display:none;">
+        <button class="back-button guide-back" type="button">‹ Back to Drug Guide</button>
+        <h2>💧 Glyceryl Trinitrate (GTN)</h2>
+        <div class="guide-priority">
+          <h3>💉 Dose & Titration</h3>
+          <div class="guide-grid">
+            <div class="guide-item"><span>Initial dose</span><strong>5 mcg/min</strong></div>
+            <div class="guide-item"><span>Titration</span><strong>Increase by 5 mcg/min every 3–5 minutes to 20 mcg/min</strong></div>
+            <div class="guide-item"><span>If no response</span><strong>Increase by 10 mcg/min every 3–5 minutes up to 200 mcg/min</strong></div>
+          </div>
+        </div>
+        <div class="guide-secondary">
+          <h3>Preparation — Rujukan Farmasi</h3>
+          <div class="guide-grid">
+            <div class="guide-item"><span>Option 1</span><strong>50 mg → final volume 100 mL NS/D5<br>500 mcg/mL<br>0.6 mL/hr = 5 mcg/min</strong></div>
+            <div class="guide-item"><span>Option 2</span><strong>50 mg → final volume 50 mL NS/D5<br>1000 mcg/mL (1 mg/mL)<br>0.3 mL/hr = 5 mcg/min</strong></div>
+          </div>
+        </div>
+        <div class="info-text info-tip" style="margin-top:14px;">📋 <strong>Rujukan:</strong> Preparation berdasarkan nota Farmasi yang dibekalkan.</div>
       </div>
     </div>
 
@@ -1288,6 +1322,28 @@
         });
       }
     }
+
+    // Drug Guide: keep the main guide clean; reveal one drug only after tap
+    document.querySelectorAll('[data-guide-drug]').forEach(button => {
+      button.addEventListener('click', () => {
+        const list = document.getElementById('guideDrugList');
+        const detail = document.getElementById('guide-' + button.dataset.guideDrug);
+        if (list && detail) {
+          list.style.display = 'none';
+          document.querySelectorAll('.guide-detail').forEach(el => el.style.display = 'none');
+          detail.style.display = 'block';
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+    });
+    document.querySelectorAll('.guide-back').forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.querySelectorAll('.guide-detail').forEach(el => el.style.display = 'none');
+        const list = document.getElementById('guideDrugList');
+        if (list) list.style.display = 'grid';
+      });
+    });
 
     // Initialize tabs on page load
     document.addEventListener('DOMContentLoaded', function() {
