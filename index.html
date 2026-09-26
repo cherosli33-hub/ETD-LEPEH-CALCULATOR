@@ -558,7 +558,7 @@
     }
     .mode-switch {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 4px;
       padding: 4px;
       margin: 0 0 18px;
@@ -719,6 +719,16 @@
       .form-row-triple:not(#infusion-card .form-row-triple) { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
       .calculator-card:not(#infusion-card) .form-row-triple .form-group:last-child { grid-column: 1 / -1; }
     }
+    .guide-hero { border: 1px solid #2f6f68; background: linear-gradient(155deg, rgba(8,55,60,.72), rgba(7,24,47,.97)); }
+    .guide-priority { margin: 14px 0; padding: 14px; border: 1px solid rgba(17,215,180,.45); border-radius: 14px; background: rgba(17,215,180,.08); }
+    .guide-priority h3 { margin: 0 0 10px; color: #73f3d9; font-size: 1rem; }
+    .guide-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+    .guide-item { padding: 11px; border: 1px solid #29476f; border-radius: 12px; background: rgba(6,18,37,.5); }
+    .guide-item span { display:block; color:#91a9c9; font-size:.74rem; margin-bottom:4px; }
+    .guide-item strong { color:#f5f8ff; font-size:.93rem; line-height:1.35; }
+    .guide-secondary { margin-top: 14px; padding-top: 14px; border-top: 1px solid #29476f; }
+    .guide-secondary h3 { margin:0 0 10px; color:#c4d3e8; font-size:.95rem; }
+    @media (max-width: 520px) { .mode-btn { font-size: .76rem; padding-left: 6px; padding-right: 6px; } .guide-grid { grid-template-columns: 1fr; } }
     @media (max-width: 370px) {
       .brand-mark { width: 46px; height: 46px; }
       .brand-copy h1 { font-size: 1.35rem; }
@@ -750,6 +760,7 @@
     <nav class="mode-switch" aria-label="Drug dan target calculator">
       <button class="mode-btn active" type="button" data-tab="drugs">◇&nbsp; Drug Calculators</button>
       <button class="mode-btn" type="button" data-tab="target">◎&nbsp; Target Dose</button>
+      <button class="mode-btn" type="button" data-tab="guide">▣&nbsp; Drug Guide</button>
     </nav>
 
     <!-- 1. INFUSION RATE CALCULATOR -->
@@ -1051,6 +1062,37 @@
 
       <div class="info-text info-danger">
         🚫 <strong>Penting:</strong> Jangan campur dengan Sodium Bicarbonate atau larutan strongly alkaline; elakkan blood dan iron salts pada infusion set yang sama. Kurangkan infusion secara beransur apabila menghentikan rawatan. Semak protokol klinikal setempat sebelum pemberian.
+      </div>
+    </div>
+
+    <!-- DRUG GUIDE: reference-only drugs, separate from existing calculators -->
+    <div class="calculator-card guide-hero" id="guide-card">
+      <h2>📖 Drug Guide</h2>
+      <p class="card-subtitle">Quick preparation & dose reference</p>
+
+      <div class="guide-priority">
+        <h3>⚡ Vasopressin — Septic / Vasodilatory Shock</h3>
+        <div class="guide-grid">
+          <div class="guide-item"><span>Administration</span><strong>Continuous IV infusion</strong></div>
+          <div class="guide-item"><span>Stock</span><strong>20 IU/mL</strong></div>
+          <div class="guide-item"><span>Preparation</span><strong>20 IU → final volume 20 mL NS/D5</strong></div>
+          <div class="guide-item"><span>Final concentration</span><strong>1 IU/mL</strong></div>
+          <div class="guide-item"><span>Dose</span><strong>0.01–0.04 IU/min</strong></div>
+          <div class="guide-item"><span>Infusion rate</span><strong>0.6–2.4 mL/hr</strong></div>
+        </div>
+      </div>
+
+      <div class="guide-secondary">
+        <h3>Other Regimen</h3>
+        <div class="guide-grid">
+          <div class="guide-item"><span>Preparation</span><strong>20 IU → final volume 100 mL NS/D5</strong></div>
+          <div class="guide-item"><span>Final concentration</span><strong>0.2 IU/mL</strong></div>
+          <div class="guide-item"><span>Administration</span><strong>IV infusion over 15 minutes</strong></div>
+        </div>
+      </div>
+
+      <div class="info-text info-tip" style="margin-top:14px;">
+        📋 <strong>Local note:</strong> Septic / vasodilatory shock dipaparkan dahulu untuk rujukan pantas.
       </div>
     </div>
 
