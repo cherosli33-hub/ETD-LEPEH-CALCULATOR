@@ -1081,6 +1081,11 @@
           <span class="drug-copy"><strong>Glyceryl Trinitrate (GTN)</strong><small>IV infusion</small></span>
           <span class="drug-arrow" aria-hidden="true">›</span>
         </button>
+        <button class="drug-card" type="button" data-guide-drug="esmolol">
+          <span class="drug-icon" aria-hidden="true">💓</span>
+          <span class="drug-copy"><strong>Esmolol</strong><small>Undiluted 10 mg/mL • Maintenance infusion</small></span>
+          <span class="drug-arrow" aria-hidden="true">›</span>
+        </button>
       </div>
 
       <div id="guide-vasopressin" class="guide-detail" style="display:none;">
@@ -1127,6 +1132,51 @@
           </div>
         </div>
         <div class="info-text info-tip" style="margin-top:14px;">📋 <strong>Rujukan:</strong> Preparation berdasarkan nota Farmasi yang dibekalkan.</div>
+      </div>
+
+      <div id="guide-esmolol" class="guide-detail" style="display:none;">
+        <button class="back-button guide-back" type="button">‹ Back to Drug Guide</button>
+        <h2>💓 Esmolol</h2>
+        <p class="card-subtitle">Undiluted • Strength 10 mg/mL</p>
+
+        <div class="guide-priority">
+          <h3>💉 Maintenance Infusion</h3>
+          <div class="guide-grid">
+            <div class="guide-item"><span>Preparation</span><strong>Undiluted</strong></div>
+            <div class="guide-item"><span>Concentration</span><strong>10 mg/mL (10,000 mcg/mL)</strong></div>
+            <div class="guide-item"><span>Printed table range</span><strong>50–300 mcg/kg/min</strong></div>
+            <div class="guide-item"><span>Local handwritten note</span><strong>50–200 mcg/kg/min</strong></div>
+          </div>
+        </div>
+
+        <div class="guide-secondary">
+          <h3>🧮 Esmolol Infusion Calculator</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="esm_weight">Weight (kg)</label>
+              <input type="number" id="esm_weight" min="1" step="0.1" inputmode="decimal" placeholder="Contoh: 70">
+            </div>
+            <div class="form-group">
+              <label for="esm_dose">Maintenance dose (mcg/kg/min)</label>
+              <select id="esm_dose">
+                <option value="50">50 mcg/kg/min</option>
+                <option value="100">100 mcg/kg/min</option>
+                <option value="150">150 mcg/kg/min</option>
+                <option value="200">200 mcg/kg/min</option>
+                <option value="250">250 mcg/kg/min</option>
+                <option value="300">300 mcg/kg/min</option>
+              </select>
+            </div>
+          </div>
+          <div class="button-group">
+            <button class="btn-primary" type="button" id="btnEsmCalc">Calculate</button>
+            <button class="btn-secondary" type="button" id="btnEsmReset">Reset</button>
+          </div>
+          <div class="result" id="esm_out" style="display:none;"></div>
+          <div class="info-text info-tip" style="margin-top:14px;">
+            📋 Formula menggunakan concentration tetap <strong>10 mg/mL</strong>: Dose × Weight × 60 ÷ 10,000 = mL/hr. Nilai sepadan dengan infusion table yang dibekalkan.
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1322,6 +1372,36 @@
         });
       }
     }
+
+    // Esmolol calculator: undiluted 10 mg/mL (10,000 mcg/mL)
+    (function() {
+      const weight = document.getElementById('esm_weight');
+      const dose = document.getElementById('esm_dose');
+      const output = document.getElementById('esm_out');
+      const calc = document.getElementById('btnEsmCalc');
+      const reset = document.getElementById('btnEsmReset');
+      if (calc) calc.addEventListener('click', () => {
+        const w = num(weight.value);
+        const d = num(dose.value);
+        if (!w || w <= 0) {
+          output.innerHTML = '⚠️ Sila masukkan berat pesakit dengan betul.';
+          output.className = 'result error';
+          show(output, true);
+          return;
+        }
+        const rate = d * w * 60 / 10000;
+        const localNote = d > 200 ? '<div class="readout-meta">⚠️ Dose ini melebihi local handwritten note 50–200 mcg/kg/min tetapi masih terdapat dalam printed table sehingga 300 mcg/kg/min.</div>' : '';
+        output.innerHTML = '<div class="readout-primary">💉 <strong>' + fmt(rate, 1) + ' mL/hr</strong></div>' +
+          '<div class="readout-meta">' + fmt(w, 1) + ' kg • ' + d + ' mcg/kg/min • 10 mg/mL undiluted</div>' + localNote;
+        output.className = 'result';
+        show(output, true);
+      });
+      if (reset) reset.addEventListener('click', () => {
+        weight.value = '';
+        dose.value = '50';
+        show(output, false);
+      });
+    })();
 
     // Drug Guide: keep the main guide clean; reveal one drug only after tap
     document.querySelectorAll('[data-guide-drug]').forEach(button => {
