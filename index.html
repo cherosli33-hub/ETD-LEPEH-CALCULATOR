@@ -853,6 +853,15 @@
           </span>
           <span class="drug-arrow" aria-hidden="true">›</span>
         </button>
+        <button class="drug-card" type="button" data-open-calculator="dopamine" style="--drug-color:#ffbd57">
+          <span class="drug-icon" aria-hidden="true">💊</span>
+          <span class="drug-copy">
+            <strong>Dopamine</strong>
+            <small>Calculate IV infusion rate by weight and target dose</small>
+            <span class="drug-chip">200 mg → final 50 mL (4 mg/mL)</span>
+          </span>
+          <span class="drug-arrow" aria-hidden="true">›</span>
+        </button>
         <button class="drug-card" type="button" data-open-calculator="insulin" style="--drug-color:#11d7b4">
           <span class="drug-icon" aria-hidden="true">💉</span>
           <span class="drug-copy">
@@ -993,6 +1002,57 @@
     🔄 <strong>Conversion:</strong> 1 mg = 1000 mcg
   </div>
 </div>
+
+    <!-- DOPAMINE IVI CALCULATOR -->
+    <div class="calculator-card" id="dopamine-card">
+      <button class="back-button" type="button" data-tab="drugs">‹ Back to Drugs</button>
+      <h2>💊 Dopamine Calculator</h2>
+      <p class="card-subtitle">200 mg → final volume 50 mL • 4 mg/mL (4000 mcg/mL)</p>
+
+      <div class="form-row-triple">
+        <div class="form-group">
+          <label for="dop_weight">Berat (kg)</label>
+          <input type="number" id="dop_weight" min="1" step="0.1" inputmode="decimal" placeholder="Contoh: 70">
+        </div>
+        <div class="form-group">
+          <label for="dop_dose">Dose (mcg/kg/min)</label>
+          <input type="number" id="dop_dose" min="0.1" max="50" step="0.1" inputmode="decimal" placeholder="Contoh: 5">
+        </div>
+        <div class="form-group">
+          <label>Kepekatan</label>
+          <input type="text" value="4000 mcg/mL (4 mg/mL)" readonly aria-label="Kepekatan Dopamine">
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button class="btn-primary" id="btnDopCalc">Kira Dopamine Rate</button>
+        <button class="btn-secondary" id="btnDopReset">Reset</button>
+      </div>
+
+      <div class="result" id="dop_out" style="display:none;"></div>
+
+      <div class="info-text info-tip">
+        🧪 <strong>Cara penyediaan (protokol rujukan):</strong><br>
+        • Dopamine 200 mg/5 mL = 1 ampoule.<br>
+        • Masukkan 200 mg Dopamine dan tambah NS atau D5 sehingga <strong>final volume 50 mL</strong>.<br>
+        • Final concentration = <strong>4 mg/mL = 4000 mcg/mL</strong>.<br>
+        • Stability pada suhu bilik: <strong>24 jam</strong>.<br>
+        ⚠️ Pastikan <strong>final volume 50 mL</strong>, bukan tambah 50 mL diluent kepada 5 mL ubat.
+      </div>
+
+      <div class="info-text info-warn">
+        ⚠️ <strong>Dos & pemantauan:</strong><br>
+        • Rujukan bermula 2–5 mcg/kg/min dan titrate mengikut respons haemodynamic/tolerability.<br>
+        • Jadual rujukan unit menggunakan 1–20 mcg/kg/min; protokol tempatan menyatakan titration sehingga 20–30 mcg/kg/min mengikut respons.<br>
+        • Betulkan hypovolaemia, hypoxia dan acidosis sebelum memulakan Dopamine.<br>
+        • Gunakan infusion pump dan akses vena besar; ikut polisi setempat mengenai central line.<br>
+        • Pantau BP, HR/rhythm, perfusi, urine output dan tapak IV/extravasation.
+      </div>
+
+      <div class="info-text info-danger">
+        🚫 <strong>Penting:</strong> Jangan campur dengan Sodium Bicarbonate atau larutan strongly alkaline; elakkan blood dan iron salts pada infusion set yang sama. Kurangkan infusion secara beransur apabila menghentikan rawatan. Semak protokol klinikal setempat sebelum pemberian.
+      </div>
+    </div>
 
     <!-- 4. TARGET DOSE CALCULATOR -->
     <div class="calculator-card" id="target-card">
@@ -1148,7 +1208,7 @@
         }
 
         // Activate corresponding buttons
-        const topTab = ['norad', 'adrenaline', 'dobutamine', 'insulin'].includes(tabId) ? 'drugs' : tabId;
+        const topTab = ['norad', 'adrenaline', 'dobutamine', 'dopamine', 'insulin'].includes(tabId) ? 'drugs' : tabId;
         const tabBtn = document.querySelector(`.mode-btn[data-tab="${topTab}"]`);
         const bottomTab = tabId;
         const quickBtn = document.querySelector(`.quick-btn[data-tab="${bottomTab}"]`);
@@ -1500,6 +1560,62 @@
       });
     }
   })();
+
+    // DOPAMINE IVI CALCULATOR — fixed local preparation 200 mg to final 50 mL
+    (function() {
+      const elements = {
+        weight: document.getElementById('dop_weight'),
+        dose: document.getElementById('dop_dose'),
+        output: document.getElementById('dop_out'),
+        calcBtn: document.getElementById('btnDopCalc'),
+        resetBtn: document.getElementById('btnDopReset')
+      };
+      const concentration = 4000; // mcg/mL = 200 mg / 50 mL
+
+      if (elements.calcBtn) {
+        elements.calcBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const weight = num(elements.weight.value);
+          const dose = num(elements.dose.value);
+
+          if (!weight || weight <= 0 || !dose || dose <= 0 || dose > 50) {
+            elements.output.innerHTML = "⚠️ Masukkan berat yang sah dan dose 0.1–50 mcg/kg/min.";
+            elements.output.className = "result error";
+            show(elements.output, true);
+            return;
+          }
+
+          const mlph = (dose * weight * 60) / concentration;
+          const localNote = dose > 30
+            ? '<br>⚠️ Dose melebihi julat 20–30 mcg/kg/min pada protokol rujukan tempatan — semak arahan klinikal.'
+            : '';
+
+          elements.output.innerHTML = `
+            <div class="readout-primary">
+              💊 <strong>Dopamine Rate: ${fmt(mlph, 1)} mL/jam</strong>
+            </div>
+            <div class="readout-meta">
+              📊 Dose: ${fmt(dose, 1)} mcg/kg/min<br>
+              ⚖️ Berat: ${fmt(weight, 1)} kg<br>
+              🧪 Kepekatan: 4000 mcg/mL (4 mg/mL)<br>
+              💉 Preparation: 200 mg → final 50 mL
+              ${localNote}
+            </div>
+          `;
+          elements.output.className = "result";
+          show(elements.output, true);
+        });
+      }
+
+      if (elements.resetBtn) {
+        elements.resetBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          elements.weight.value = "";
+          elements.dose.value = "";
+          show(elements.output, false);
+        });
+      }
+    })();
 
     // 4. TARGET DOSE CALCULATOR
     (function() {
