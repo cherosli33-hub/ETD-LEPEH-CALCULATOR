@@ -1,6 +1,5 @@
-const CACHE_NAME = "etd-lepeh-calculator-v8";
+const CACHE_NAME = "etd-lepeh-calculator-v9";
 const APP_FILES = [
-  "./",
   "./etd-lepeh-manifest.json",
   "./etd-lepeh-icon-192.png",
   "./etd-lepeh-icon-512.png"
@@ -25,13 +24,27 @@ self.addEventListener("activate", event => {
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
 
+  const request = event.request;
+  const isNavigation = request.mode === "navigate";
+
+  // HTML/navigation must be network-first so Cloudflare deployments appear immediately.
+  if (isNavigation) {
+    event.respondWith(
+      fetch(request)
+        .then(response => response)
+        .catch(() => caches.match("./"))
+    );
+    return;
+  }
+
+  // Static assets can remain cache-first.
   event.respondWith(
-    caches.match(event.request).then(cached => {
+    caches.match(request).then(cached => {
       if (cached) return cached;
-      return fetch(event.request).then(response => {
+      return fetch(request).then(response => {
         if (response.ok && !response.redirected) {
           const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+          caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
         }
         return response;
       });
