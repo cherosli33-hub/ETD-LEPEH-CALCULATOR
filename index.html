@@ -853,6 +853,15 @@
           </span>
           <span class="drug-arrow" aria-hidden="true">›</span>
         </button>
+        <button class="drug-card" type="button" data-open-calculator="insulin" style="--drug-color:#11d7b4">
+          <span class="drug-icon" aria-hidden="true">💉</span>
+          <span class="drug-copy">
+            <strong>Insulin</strong>
+            <small>Sliding scale insulin dose by blood glucose and regimen</small>
+            <span class="drug-chip">Regim A · B · C · D</span>
+          </span>
+          <span class="drug-arrow" aria-hidden="true">›</span>
+        </button>
       </div>
     </section>
 
@@ -1039,6 +1048,7 @@
 
     <!-- 5. SLIDING SCALE INSULIN CALCULATOR -->
     <div class="calculator-card" id="insulin-card">
+      <button class="back-button" type="button" data-tab="drugs">‹ Back to Drugs</button>
       <h2>💉 Sliding Scale Insulin Calculator</h2>
       
       <div class="form-row">
@@ -1103,10 +1113,6 @@
         <span class="icon">⏱️</span>
         <span>Time</span>
       </button>
-      <button class="quick-btn" data-tab="insulin">
-        <span class="icon">💉</span>
-        <span>Insulin</span>
-      </button>
     </div>
   </div>
 
@@ -1142,7 +1148,7 @@
         }
 
         // Activate corresponding buttons
-        const topTab = ['norad', 'adrenaline', 'dobutamine'].includes(tabId) ? 'drugs' : tabId;
+        const topTab = ['norad', 'adrenaline', 'dobutamine', 'insulin'].includes(tabId) ? 'drugs' : tabId;
         const tabBtn = document.querySelector(`.mode-btn[data-tab="${topTab}"]`);
         const bottomTab = tabId;
         const quickBtn = document.querySelector(`.quick-btn[data-tab="${bottomTab}"]`);
