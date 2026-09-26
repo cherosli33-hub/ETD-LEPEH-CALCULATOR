@@ -1086,6 +1086,11 @@
           <span class="drug-copy"><strong>Esmolol</strong><small>Undiluted 10 mg/mL • Maintenance infusion</small></span>
           <span class="drug-arrow" aria-hidden="true">›</span>
         </button>
+        <button class="drug-card" type="button" data-guide-drug="labetalol">
+          <span class="drug-icon" aria-hidden="true">🫀</span>
+          <span class="drug-copy"><strong>Labetalol</strong><small>25 mg/5 mL • Hypertension crisis</small></span>
+          <span class="drug-arrow" aria-hidden="true">›</span>
+        </button>
       </div>
 
       <div id="guide-vasopressin" class="guide-detail" style="display:none;">
@@ -1176,6 +1181,58 @@
             📋 Formula menggunakan concentration tetap <strong>10 mg/mL</strong>: Dose × Weight × 60 ÷ 10,000 = mL/hr. Nilai sepadan dengan infusion table yang dibekalkan.
           </div>
         </div>
+
+      <div id="guide-labetalol" class="guide-detail" style="display:none;">
+        <button class="back-button guide-back" type="button">‹ Back to Drug Guide</button>
+        <h2>🫀 Labetalol</h2>
+        <p class="card-subtitle">25 mg/5 mL (5 mg/mL) • Hypertension crisis</p>
+
+        <div class="guide-priority">
+          <h3>⭐ Local Practice — Undiluted IV Infusion</h3>
+          <div class="guide-grid">
+            <div class="guide-item"><span>Preparation</span><strong>UNDILUTED</strong></div>
+            <div class="guide-item"><span>Concentration</span><strong>5 mg/mL</strong></div>
+            <div class="guide-item"><span>Dose</span><strong>0.5–2 mg/min</strong></div>
+            <div class="guide-item"><span>Infusion rate</span><strong>6–24 mL/hr</strong></div>
+          </div>
+          <div class="info-text info-tip" style="margin-top:12px;">Local handwritten practice supplied: use Labetalol 25 mg/5 mL undiluted. At 5 mg/mL: 0.5 mg/min = 6 mL/hr and 2 mg/min = 24 mL/hr. Titrate according to response.</div>
+        </div>
+
+        <div class="guide-secondary">
+          <h3>💉 IV Bolus — Printed Protocol</h3>
+          <div class="guide-grid">
+            <div class="guide-item"><span>Dose</span><strong>50 mg IV</strong></div>
+            <div class="guide-item"><span>Administration</span><strong>Over at least 1 minute</strong></div>
+            <div class="guide-item"><span>Repeat</span><strong>Every 5–10 min until desired BP</strong></div>
+            <div class="guide-item"><span>Maximum</span><strong>200 mg</strong></div>
+          </div>
+          <div class="info-text" style="margin-top:12px;">IV bolus: use undiluted.</div>
+        </div>
+
+        <div class="guide-secondary">
+          <h3>🧮 Undiluted Infusion Calculator</h3>
+          <div class="form-group">
+            <label for="lab_dose">Dose (mg/min)</label>
+            <input type="number" id="lab_dose" min="0.5" max="2" step="0.1" inputmode="decimal" value="0.5">
+          </div>
+          <div class="button-group">
+            <button class="btn-primary" type="button" id="btnLabCalc">Calculate</button>
+            <button class="btn-secondary" type="button" id="btnLabReset">Reset</button>
+          </div>
+          <div class="result" id="lab_out" style="display:none;"></div>
+          <div class="info-text info-tip" style="margin-top:14px;">Formula: Dose (mg/min) × 60 ÷ 5 mg/mL = mL/hr.</div>
+        </div>
+
+        <div class="guide-secondary">
+          <h3>⚠️ Important Notes</h3>
+          <div class="info-text">Printed protocol: maximum total IV infusion dose 300 mg; discard within 24 hours. Patient should remain supine for at least 3 hours after IV injection. Incompatible with sodium bicarbonate. Avoid an excessively rapid fall in severely elevated blood pressure.</div>
+        </div>
+
+        <div class="guide-secondary">
+          <h3>🤰 IV Infusion in Pregnancy — Printed Protocol</h3>
+          <div class="info-text"><strong>20 mg/hr</strong>, then double every 30 minutes until satisfactory response. Maximum <strong>160 mg/hr</strong>.</div>
+        </div>
+      </div>
       </div>
     </div>
 
@@ -1397,6 +1454,32 @@
       if (reset) reset.addEventListener('click', () => {
         weight.value = '';
         dose.value = '50';
+        show(output, false);
+      });
+    })();
+
+    // Labetalol local-practice calculator: undiluted 25 mg/5 mL = 5 mg/mL
+    (function() {
+      const dose = document.getElementById('lab_dose');
+      const output = document.getElementById('lab_out');
+      const calc = document.getElementById('btnLabCalc');
+      const reset = document.getElementById('btnLabReset');
+      if (calc) calc.addEventListener('click', () => {
+        const d = num(dose.value);
+        if (!d || d < 0.5 || d > 2) {
+          output.innerHTML = '⚠️ Masukkan dose 0.5–2 mg/min mengikut local protocol.';
+          output.className = 'result error';
+          show(output, true);
+          return;
+        }
+        const rate = d * 60 / 5;
+        output.innerHTML = '<div class="readout-primary">💉 <strong>' + fmt(rate, 1) + ' mL/hr</strong></div>' +
+          '<div class="readout-meta">' + fmt(d, 1) + ' mg/min • UNDILUTED • 5 mg/mL</div>';
+        output.className = 'result';
+        show(output, true);
+      });
+      if (reset) reset.addEventListener('click', () => {
+        dose.value = '0.5';
         show(output, false);
       });
     })();
