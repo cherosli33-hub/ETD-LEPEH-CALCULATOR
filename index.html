@@ -1145,7 +1145,6 @@
             <div class="guide-item"><span>Preparation</span><strong>Undiluted</strong></div>
             <div class="guide-item"><span>Concentration</span><strong>10 mg/mL (10,000 mcg/mL)</strong></div>
             <div class="guide-item"><span>Printed table range</span><strong>50–300 mcg/kg/min</strong></div>
-            <div class="guide-item"><span>Local handwritten note</span><strong>50–200 mcg/kg/min</strong></div>
           </div>
         </div>
 
@@ -1390,9 +1389,8 @@
           return;
         }
         const rate = d * w * 60 / 10000;
-        const localNote = d > 200 ? '<div class="readout-meta">⚠️ Dose ini melebihi local handwritten note 50–200 mcg/kg/min tetapi masih terdapat dalam printed table sehingga 300 mcg/kg/min.</div>' : '';
         output.innerHTML = '<div class="readout-primary">💉 <strong>' + fmt(rate, 1) + ' mL/hr</strong></div>' +
-          '<div class="readout-meta">' + fmt(w, 1) + ' kg • ' + d + ' mcg/kg/min • 10 mg/mL undiluted</div>' + localNote;
+          '<div class="readout-meta">' + fmt(w, 1) + ' kg • ' + d + ' mcg/kg/min • 10 mg/mL undiluted</div>';
         output.className = 'result';
         show(output, true);
       });
