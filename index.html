@@ -728,6 +728,76 @@
     .guide-item strong { color:#f5f8ff; font-size:.93rem; line-height:1.35; }
     .guide-secondary { margin-top: 14px; padding-top: 14px; border-top: 1px solid #29476f; }
     .guide-secondary h3 { margin:0 0 10px; color:#c4d3e8; font-size:.95rem; }
+    /* ---------- Section hierarchy refresh ---------- */
+    .mode-switch {
+      border-radius: 18px;
+      gap: 7px;
+      padding: 6px;
+      background: rgba(4, 14, 30, .82);
+    }
+    .mode-btn {
+      position: relative;
+      min-height: 58px;
+      border-radius: 13px;
+      white-space: normal;
+      line-height: 1.15;
+      border: 1px solid transparent;
+      font-size: .78rem;
+      padding: 8px 5px;
+    }
+    .mode-btn[data-tab="drugs"] { --section-color:#19d8b6; --section-bg:rgba(25,216,182,.13); }
+    .mode-btn[data-tab="target"] { --section-color:#ffb84d; --section-bg:rgba(255,184,77,.13); }
+    .mode-btn[data-tab="guide"] { --section-color:#9b8cff; --section-bg:rgba(155,140,255,.14); }
+    .mode-btn.active {
+      color: #fff;
+      border-color: color-mix(in srgb, var(--section-color) 65%, transparent);
+      background: var(--section-bg);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--section-color) 12%, transparent), 0 8px 22px rgba(0,0,0,.18);
+    }
+    .mode-btn.active::after {
+      content:"";
+      position:absolute;
+      left:22%; right:22%; bottom:5px;
+      height:3px; border-radius:99px;
+      background:var(--section-color);
+    }
+    #target-card { border-color: rgba(255,184,77,.45); background: linear-gradient(155deg, rgba(55,39,13,.46), rgba(7,24,47,.97)); }
+    #target-card > h2 { color:#ffd38c; }
+    #guide-card { border-color: rgba(155,140,255,.5); background: linear-gradient(155deg, rgba(35,29,76,.66), rgba(7,24,47,.98)); }
+    #guide-card > h2 { color:#c9c1ff; }
+    #guide-card > .card-subtitle { color:#aeb9d8; }
+    #guideDrugList { padding-top: 3px; }
+    #guideDrugList .drug-card:nth-child(6n+1) { --drug-color:#5eead4; }
+    #guideDrugList .drug-card:nth-child(6n+2) { --drug-color:#67c7ff; }
+    #guideDrugList .drug-card:nth-child(6n+3) { --drug-color:#b7a5ff; }
+    #guideDrugList .drug-card:nth-child(6n+4) { --drug-color:#ffbd70; }
+    #guideDrugList .drug-card:nth-child(6n+5) { --drug-color:#ff8fa8; }
+    #guideDrugList .drug-card:nth-child(6n+6) { --drug-color:#8fd6a7; }
+    .guide-detail .back-button {
+      min-height: 44px;
+      margin: -2px 0 20px;
+      padding: 0 14px;
+      color: #efeaff;
+      background: rgba(155,140,255,.14);
+      border: 1px solid rgba(176,163,255,.58);
+      border-radius: 999px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.07);
+      font-size: .82rem;
+      font-weight: 750;
+    }
+    .guide-detail .back-button::first-letter { color:#fff; }
+    .guide-detail > h2 {
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(155,140,255,.28);
+      color:#f7f5ff !important;
+    }
+    .guide-detail > .card-subtitle { margin-left:0; padding: 0 0 13px; color:#b7b0df; }
+    .guide-detail .guide-priority {
+      border-color: rgba(155,140,255,.42);
+      background: rgba(155,140,255,.08);
+    }
+    .guide-detail .guide-priority h3 { color:#c9c1ff; }
+
     @media (max-width: 520px) { .mode-btn { font-size: .76rem; padding-left: 6px; padding-right: 6px; } .guide-grid { grid-template-columns: 1fr; } }
     @media (max-width: 370px) {
       .brand-mark { width: 46px; height: 46px; }
